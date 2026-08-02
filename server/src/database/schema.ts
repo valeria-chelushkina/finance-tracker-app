@@ -13,19 +13,41 @@ import {
   timestamp,
   doublePrecision,
   date,
+  pgEnum,
   boolean,
   jsonb,
   text,
   check,
   unique,
 } from "drizzle-orm/pg-core";
-import {
-  typesEnum,
-  banksEnum,
-  frequencyTypesEnum,
-  paymentTypesEnum,
-  cashbackTypesEnum,
-} from "./types.js";
+
+export const banksEnum = pgEnum("bank_name", ["monobank"]);
+
+export const paymentTypesEnum = pgEnum("paument_type", ["card", "cash"]);
+
+export const cashbackTypesEnum = pgEnum("cashback_type", [
+  "None",
+  "UAH",
+  "Miles",
+]);
+
+// 1: transaction happens every * days
+// 2: transaction happens on * day of every month
+export const frequencyTypesEnum = pgEnum("frequency_type", [
+  "number_of_days",
+  "date_of_month",
+]);
+
+// monobank card types
+export const typesEnum = pgEnum("type", [
+  "black",
+  "white",
+  "platinum",
+  "iron",
+  "fop",
+  "yellow",
+  "eAid",
+]);
 
 export const usersTable = pgTable(
   "users",
@@ -68,7 +90,7 @@ export const accountsTable = pgTable(
     isoCurrencyCheck("accounts"),
     check(
       "cashback_type_card",
-      sql`(${t.cashbackType} = Miles AND (${t.type} = platinum OR ${t.type} = iron)) OR (${t.cashbackType} <> Miles OR ${t.cashbackType} IS NULL)`,
+      sql`(${t.cashbackType} = 'Miles' AND (${t.type} = 'platinum' OR ${t.type} = 'iron')) OR (${t.cashbackType} <> 'Miles' OR ${t.cashbackType} IS NULL)`,
     ),
   ],
 );
@@ -211,3 +233,4 @@ export const categoriesTable = pgTable("categories", {
 });
 
 // will create user_preferences table when start working on UI
+// will think where to add common bought by user items
