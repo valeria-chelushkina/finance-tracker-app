@@ -13,6 +13,7 @@ import {
   boolean,
   jsonb,
   text,
+  check,
 } from "drizzle-orm/pg-core";
 
 // right now it is only monobank, but in plans expand the app and take privatbank information,
@@ -44,12 +45,14 @@ export const usersTable = pgTable("users", {
   username: varchar({ length: 255 }).notNull().unique(),
   passwordHash: varchar("password_hash", { length: 255 }),
   name: varchar({ length: 255 }),
-  profilePicture: text(),
+  profilePicture: text(), //??
   bankToken: varchar("bank_token", { length: 255 }).unique(),
   expectedSalary: doublePrecision("expected_salary"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at"),
-});
+}, (t) => [
+  check("salary_check", sql`${t.expectedSalary} > 0`)
+]);
 
 export const accountsTable = pgTable("accounts", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -69,7 +72,9 @@ export const accountsTable = pgTable("accounts", {
     .default(sql`'{}'::text[]`),
   type: typesEnum().default("black").notNull(),
   iban: varchar({ length: 34 }),
-});
+}, (t) => [
+  check('currency_code_boundaries_accounts', sql`${t.currencyCode} > 7 AND ${t.currencyCode} < 998`)
+]);
 
 // only successful transactions - if transaction didn't go through, it will not be saved
 // transactions made with cash would also be saved here (user will enter manualy)
@@ -91,7 +96,9 @@ export const transactionsTable = pgTable("transactions", {
   commissionRate: doublePrecision("commission_rate"),
   cashbackAmout: doublePrecision("cashback_amount"),
   comment: varchar({ length: 255 }),
-});
+}, (t) => [
+  check('currency_code_boundaries_transactions', sql`${t.currencyCode} > 7 AND ${t.currencyCode} < 998`)
+]);
 
 export const recurringTransactionsTable = pgTable("recurring_transactions", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -106,7 +113,9 @@ export const recurringTransactionsTable = pgTable("recurring_transactions", {
     frequencyTypesEnum("frequency_type").default("number_of_days"),
   frequency: integer().notNull(),
   isActive: boolean("is_active").default(true),
-});
+}, (t) => [
+  check('currency_code_boundaries_recur_transactions', sql`${t.currencyCode} > 7 AND ${t.currencyCode} < 998`)
+]);
 
 export const budgetsTable = pgTable("budgets", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -132,7 +141,9 @@ export const jarsTable = pgTable("jars", {
   currencyCode: integer("currency_code").default(980),
   balance: doublePrecision(),
   goal: doublePrecision(),
-});
+}, (t) => [
+  check('currency_code_boundaries_jars', sql`${t.currencyCode} > 7 AND ${t.currencyCode} < 998`)
+]);
 
 export const wishlistsTable = pgTable("wishlists", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -144,7 +155,9 @@ export const wishlistsTable = pgTable("wishlists", {
   currencyCode: integer("currency_code").default(980),
   url: text(),
   // category
-});
+}, (t) => [
+  check('currency_code_boundaries_wishlistts', sql`${t.currencyCode} > 7 AND ${t.currencyCode} < 998`)
+]);
 
 export const statisticsTable = pgTable("statistics", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -156,6 +169,8 @@ export const statisticsTable = pgTable("statistics", {
   year: integer(),
   amount: doublePrecision(),
   currencyCode: integer("currency_code").default(980),
-});
+}, (t) => [
+  check('currency_code_boundaries_statistics', sql`${t.currencyCode} > 7 AND ${t.currencyCode} < 998`)
+]);
 
 // need to create categories table based on mccs
