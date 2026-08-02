@@ -12,7 +12,6 @@ import {
   varchar,
   timestamp,
   doublePrecision,
-  pgEnum,
   date,
   boolean,
   jsonb,
@@ -20,32 +19,13 @@ import {
   check,
   unique,
 } from "drizzle-orm/pg-core";
-
-// right now it is only monobank, but in plans expand the app and take privatbank information,
-// if will not happen - data type will be changed.
-const banksEnum = pgEnum("bank_name", ["monobank"]);
-
-const paymentTypesEnum = pgEnum("paument_type", ["card", "cash"]);
-
-const cashbackTypesEnum = pgEnum("cashback_type", ["None", "UAH", "Miles"]);
-
-// 1: transaction happens every * days
-// 2: transaction happens on * day of every month
-const frequencyTypesEnum = pgEnum("frequency_type", [
-  "number_of_days",
-  "date_of_month",
-]);
-
-// monobank card types
-const typesEnum = pgEnum("type", [
-  "black",
-  "white",
-  "platinum",
-  "iron",
-  "fop",
-  "yellow",
-  "eAid",
-]);
+import {
+  typesEnum,
+  banksEnum,
+  frequencyTypesEnum,
+  paymentTypesEnum,
+  cashbackTypesEnum,
+} from "./types.js";
 
 export const usersTable = pgTable(
   "users",
@@ -213,4 +193,21 @@ export const statisticsTable = pgTable(
   ],
 );
 
-// need to create categories table based on mccs
+export const categoriesTable = pgTable("categories", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  userId: integer("user_id").references(() => usersTable.id, {
+    onDelete: "cascade",
+  }),
+  name: varchar({ length: 255 }).notNull().unique(),
+  color: varchar({ length: 7 }),
+  icon: varchar({ length: 255 }),
+  isComposite: boolean("is_composite").default(false).notNull(),
+  mccCodes: integer("mcc_codes")
+    .array()
+    .default(sql`ARRAY[]::integer[]`),
+  includedCategories: integer("included_categories")
+    .array()
+    .default(sql`ARRAY[]::integer[]`),
+});
+
+// will create user_preferences table when start working on UI

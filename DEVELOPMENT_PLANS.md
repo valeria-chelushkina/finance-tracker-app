@@ -8,6 +8,7 @@
 6. User can manually write in transactions (both card and cash), add statistics.
 7. Calendar - user tracks holidays, birthdays, can add a budget amount for a specific holiday. (maybe integration with icloud calendar? if possible).
 8. Notifications - will be sent before holidays or recurring transactions as a reminder.
+9. List of items that user buys regularly (for example hair or body cair products) - so it would be easy to add them to the budget.
 
 ### Maybe some day, maybe not:
 1. Telegram bot with notifications & quick add for some options.
