@@ -3,16 +3,16 @@ import { users } from "@server/modules/user/user.modules.js";
 import { db, DbClient } from "@server/database/databaseClient.js";
 import { eq } from "drizzle-orm";
 
-export class UserRepository {
+export default class UserRepository {
   private readonly DbClient: DbClient;
 
   constructor(dbClient: DbClient = db) {
     this.DbClient = dbClient;
   }
 
-  async createUser(newUser: NewUser): Promise<User> {
+  async createUser(email: string, password: string): Promise<User> {
     const [createdUser] = await this.DbClient.insert(users)
-      .values(newUser)
+      .values({email: email, passwordHash: password})
       .returning();
     return createdUser;
   }

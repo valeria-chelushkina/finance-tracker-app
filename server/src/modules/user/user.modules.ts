@@ -14,7 +14,7 @@ export const users = pgTable(
   {
     id: integer().primaryKey().generatedAlwaysAsIdentity(),
     email: varchar({ length: 255 }).notNull().unique(),
-    passwordHash: varchar("password_hash", { length: 255 }),
+    passwordHash: varchar("password_hash", { length: 255 }).notNull(),
     name: varchar({ length: 255 }),
     profilePicture: text(), //??
     bankToken: varchar("bank_token", { length: 255 }).unique(),
