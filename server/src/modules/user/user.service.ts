@@ -36,7 +36,7 @@ export default class UserService {
     return updatedUser;
   }
 
-  async deleteUser(id: number): Promise<number | null> {
+  async deleteUser(id: number): Promise<boolean> {
     const deletedUser = await this.userRepository.deleteUser(id);
     if (!deletedUser) {
       throw new NotFoundError(

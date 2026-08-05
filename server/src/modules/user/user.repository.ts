@@ -36,10 +36,10 @@ export default class UserRepository {
     return updatedUser || null;
   }
 
-  async deleteUser(id: number): Promise<number | null> {
-    const [deletedUser] = await this.DbClient.delete(users)
+  async deleteUser(id: number): Promise<boolean> {
+    const deletedUser = await this.DbClient.delete(users)
       .where(eq(users.id, id))
       .returning({ deletedUser: users.id });
-    return deletedUser.deletedUser;
+    return deletedUser.length > 0;
   }
 }
