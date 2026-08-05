@@ -21,6 +21,8 @@ import {
   unique,
 } from "drizzle-orm/pg-core";
 
+import { users } from "@server/modules/user/user.modules.js";
+
 export const banksEnum = pgEnum("bank_name", ["monobank"]);
 
 export const paymentTypesEnum = pgEnum("paument_type", ["card", "cash"]);
@@ -49,29 +51,13 @@ export const typesEnum = pgEnum("type", [
   "eAid",
 ]);
 
-export const usersTable = pgTable(
-  "users",
-  {
-    id: integer().primaryKey().generatedAlwaysAsIdentity(),
-    username: varchar({ length: 255 }).notNull().unique(),
-    passwordHash: varchar("password_hash", { length: 255 }),
-    name: varchar({ length: 255 }),
-    profilePicture: text(), //??
-    bankToken: varchar("bank_token", { length: 255 }).unique(),
-    expectedSalary: doublePrecision("expected_salary"),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at"),
-  },
-  (t) => [check("salary_check", sql`${t.expectedSalary} > 0`)],
-);
-
 export const accountsTable = pgTable(
   "accounts",
   {
     id: integer().primaryKey().generatedAlwaysAsIdentity(),
     userId: integer("user_id")
       .notNull()
-      .references(() => usersTable.id, { onDelete: "cascade" }),
+      .references(() => users.id, { onDelete: "cascade" }),
     bankName: banksEnum().default("monobank").notNull(),
     cardId: varchar("card_id", { length: 255 }).unique(),
     sendId: varchar("send_id", { length: 255 }).unique(),
@@ -103,7 +89,7 @@ export const transactionsTable = pgTable(
     id: integer().primaryKey().generatedAlwaysAsIdentity(),
     userId: integer("user_id")
       .notNull()
-      .references(() => usersTable.id, { onDelete: "cascade" }),
+      .references(() => users.id, { onDelete: "cascade" }),
     paymentType: paymentTypesEnum().default("card"),
     accountId: integer("account_id").references(() => accountsTable.id, {
       onDelete: "cascade",
@@ -127,7 +113,7 @@ export const recurringTransactionsTable = pgTable(
     id: integer().primaryKey().generatedAlwaysAsIdentity(),
     userId: integer("user_id")
       .notNull()
-      .references(() => usersTable.id, { onDelete: "cascade" }),
+      .references(() => users.id, { onDelete: "cascade" }),
     name: varchar({ length: 255 }).notNull().unique(), // to prevent same name
     amount: doublePrecision().notNull(),
     currencyCode: isoCurrencyColumn(),
@@ -145,7 +131,7 @@ export const budgetsTable = pgTable(
     id: integer().primaryKey().generatedAlwaysAsIdentity(),
     userId: integer("user_id")
       .notNull()
-      .references(() => usersTable.id, { onDelete: "cascade" }),
+      .references(() => users.id, { onDelete: "cascade" }),
     category: varchar({ length: 255 }),
     items: jsonb(),
     limitAmount: doublePrecision("limit_amount"),
@@ -165,7 +151,7 @@ export const jarsTable = pgTable(
     id: integer().primaryKey().generatedAlwaysAsIdentity(),
     userId: integer("user_id")
       .notNull()
-      .references(() => usersTable.id, { onDelete: "cascade" }),
+      .references(() => users.id, { onDelete: "cascade" }),
     jarId: varchar("jar_id").notNull().unique(),
     sendId: varchar("send_id").notNull().unique(),
     title: varchar({ length: 255 }),
@@ -183,7 +169,7 @@ export const wishlistsTable = pgTable(
     id: integer().primaryKey().generatedAlwaysAsIdentity(),
     userId: integer("user_id")
       .notNull()
-      .references(() => usersTable.id, { onDelete: "cascade" }),
+      .references(() => users.id, { onDelete: "cascade" }),
     name: varchar({ length: 255 }),
     amount: doublePrecision(),
     currencyCode: isoCurrencyColumn(),
@@ -202,7 +188,7 @@ export const statisticsTable = pgTable(
     id: integer().primaryKey().generatedAlwaysAsIdentity(),
     userId: integer("user_id")
       .notNull()
-      .references(() => usersTable.id, { onDelete: "cascade" }),
+      .references(() => users.id, { onDelete: "cascade" }),
     categories: jsonb(),
     month: integer(),
     year: integer(),
@@ -217,7 +203,7 @@ export const statisticsTable = pgTable(
 
 export const categoriesTable = pgTable("categories", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  userId: integer("user_id").references(() => usersTable.id, {
+  userId: integer("user_id").references(() => users.id, {
     onDelete: "cascade",
   }),
   name: varchar({ length: 255 }).notNull().unique(),
