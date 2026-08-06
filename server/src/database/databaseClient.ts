@@ -1,5 +1,8 @@
-import 'dotenv/config';
-import { drizzle } from 'drizzle-orm/node-postgres';
+import "dotenv/config";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { getEnvOrThrow } from "@server/utils/getEnvOrThrow.js";
 
-export const db = drizzle(process.env.DATABASE_URL!);
+const dbUrl = getEnvOrThrow("DATABASE_URL");
+
+export const db = drizzle(dbUrl);
 export type DbClient = typeof db;

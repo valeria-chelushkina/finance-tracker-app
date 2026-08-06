@@ -1,7 +1,7 @@
 // Database tables
 // Some tables, as for now, are built to fit monobank api
 
-import { isoCurrencyColumn, isoCurrencyCheck } from "../helpers/db-helpers.js";
+import { isoCurrencyColumn, isoCurrencyCheck } from '@server/helpers/db-helpers.js';
 import { sql } from "drizzle-orm";
 import {
   integer,
@@ -18,35 +18,21 @@ import {
   unique,
 } from "drizzle-orm/pg-core";
 
-import { users } from "../modules/user/user.module.js";
+import { users } from "@server/modules/user/user.module.js";
+import {BankProviders, PaymentTypes, CashbackTypes, PaymentFrequencyTypes, CardTypes} from "@server/types/db-enums.js";
 
-export const banksEnum = pgEnum("bank_name", ["monobank"]);
+export const banksEnum = pgEnum("bank_name", Object.values(BankProviders) as [string, ...string[]]);
 
-export const paymentTypesEnum = pgEnum("paument_type", ["card", "cash"]);
+export const paymentTypesEnum = pgEnum("paument_type", Object.values(PaymentTypes) as [string, ...string[]]);
 
-export const cashbackTypesEnum = pgEnum("cashback_type", [
-  "None",
-  "UAH",
-  "Miles",
-]);
+export const cashbackTypesEnum = pgEnum("cashback_type", Object.values(CashbackTypes) as [string, ...string[]]);
 
 // 1: transaction happens every * days
 // 2: transaction happens on * day of every month
-export const frequencyTypesEnum = pgEnum("frequency_type", [
-  "number_of_days",
-  "date_of_month",
-]);
+export const frequencyTypesEnum = pgEnum("frequency_type", Object.values(PaymentFrequencyTypes) as [string, ...string[]]);
 
 // monobank card types
-export const typesEnum = pgEnum("type", [
-  "black",
-  "white",
-  "platinum",
-  "iron",
-  "fop",
-  "yellow",
-  "eAid",
-]);
+export const typesEnum = pgEnum("type", Object.values(CardTypes) as [string, ...string[]]);
 
 export const accountsTable = pgTable(
   "accounts",
@@ -55,7 +41,7 @@ export const accountsTable = pgTable(
     userId: integer("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    bankName: banksEnum().default("monobank").notNull(),
+    bankName: banksEnum().default(BankProviders.Monobank).notNull(),
     cardId: varchar("card_id", { length: 255 }).unique(),
     sendId: varchar("send_id", { length: 255 }).unique(),
     currencyCode: isoCurrencyColumn(),
@@ -66,7 +52,7 @@ export const accountsTable = pgTable(
       .array()
       .notNull()
       .default(sql`'{}'::text[]`),
-    type: typesEnum().default("black").notNull(),
+    type: typesEnum().default(CardTypes.Black).notNull(),
     iban: varchar({ length: 34 }),
   },
   (t) => [
@@ -87,7 +73,7 @@ export const transactionsTable = pgTable(
     userId: integer("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    paymentType: paymentTypesEnum().default("card"),
+    paymentType: paymentTypesEnum().default(PaymentTypes.Card),
     accountId: integer("account_id").references(() => accountsTable.id, {
       onDelete: "cascade",
     }),
@@ -95,7 +81,7 @@ export const transactionsTable = pgTable(
     transactionTime: timestamp("transaction_time"),
     description: varchar({ length: 255 }),
     //category
-    amount: doublePrecision().notNull(), // commision will be included (if they exist)
+    amount: doublePrecision().notNull(), // commision will be included (if it exists)
     currencyCode: isoCurrencyColumn(),
     commissionRate: doublePrecision("commission_rate"),
     cashbackAmout: doublePrecision("cashback_amount"),
@@ -115,7 +101,7 @@ export const recurringTransactionsTable = pgTable(
     amount: doublePrecision().notNull(),
     currencyCode: isoCurrencyColumn(),
     nextDueDate: date("next_due_date"),
-    fruequencyType: frequencyTypesEnum().default("number_of_days"),
+    fruequencyType: frequencyTypesEnum().default(PaymentFrequencyTypes.NumberOfDays),
     frequency: integer().notNull(),
     isActive: boolean("is_active").default(true),
   },

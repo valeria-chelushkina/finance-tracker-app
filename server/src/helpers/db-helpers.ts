@@ -1,4 +1,4 @@
-import { pgTable, integer, check } from "drizzle-orm/pg-core";
+import { integer, check } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import * as data from "../config/currencies.json" with { type: "json" };
 
