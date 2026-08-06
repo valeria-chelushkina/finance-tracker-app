@@ -1,6 +1,6 @@
 import UserService from "./user.service.js";
 import express from "express";
-import type { User, NewUser } from "./user.module.js";
+import type { User, SafeUser } from "./user.module.js";
 import NotFoundError from "../../errors/notFoundError.js";
 
 // auth is not implemented yet
@@ -16,7 +16,7 @@ export default class UserController {
         return;
       }
 
-      const user: User | null = await this.userService.getUserById(userId);
+      const user: SafeUser | null = await this.userService.getUserById(userId);
       res.json(user);
     } catch (err: any) {
       errorHandler(err, res);
@@ -32,7 +32,7 @@ export default class UserController {
         return;
       }
 
-      const user: User | null = await this.userService.updateUser(
+      const user: SafeUser | null = await this.userService.updateUser(
         id,
         userPayload,
       );

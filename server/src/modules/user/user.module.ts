@@ -26,4 +26,7 @@ export const users = pgTable(
 );
 
 export type User = typeof users.$inferSelect;
-export type NewUser = typeof users.$inferInsert;
+
+// will think if I would need to make some other columns not accessible
+export type NewUser = Omit<typeof users.$inferInsert, 'passwordHash'>;
+export type SafeUser = Omit<User, 'passwordHash'>;

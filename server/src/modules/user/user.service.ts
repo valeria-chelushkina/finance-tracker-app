@@ -1,5 +1,5 @@
 import UserRepository from "./user.repository.js";
-import type { User, NewUser } from "./user.module.js";
+import type { User, NewUser, SafeUser } from "./user.module.js";
 import NotFoundError from "../../errors/notFoundError.js";
 
 export default class UserService {
@@ -11,7 +11,7 @@ export default class UserService {
     return createdUser;
   }
 
-  async getUserById(id: number): Promise<User | null> {
+  async getUserById(id: number): Promise<SafeUser | null> {
     const user = await this.userRepository.getUserById(id);
 
     if (!user) {
@@ -26,7 +26,7 @@ export default class UserService {
   async updateUser(
     id: number,
     payload: Partial<NewUser>,
-  ): Promise<User | null> {
+  ): Promise<SafeUser | null> {
     const updatedUser = await this.userRepository.updateUser(id, payload);
     if (!updatedUser) {
       throw new NotFoundError(
