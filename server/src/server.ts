@@ -1,16 +1,19 @@
 import express, { Application, Request, Response } from "express";
+import userRouter from './modules/user/user.routes.js';
 
 const app: Application = express();
-const port = 3000;
+const PORT = 3000;
 
 app.use(express.urlencoded({ extended: true }));
 
 app.use(express.json());
 
-app.get('/', (req: Request, res: Response) => {
-  res.send("Hello!");
+app.use('/user', userRouter);
+
+app.get('/users', (req: Request, res: Response) => {
+  res.send("It is working :)");
 });
 
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
 });

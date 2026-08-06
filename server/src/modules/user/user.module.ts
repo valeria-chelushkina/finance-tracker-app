@@ -16,7 +16,7 @@ export const users = pgTable(
     email: varchar({ length: 255 }).notNull().unique(),
     passwordHash: varchar("password_hash", { length: 255 }).notNull(),
     name: varchar({ length: 255 }),
-    profilePicture: text(), //??
+    profilePicture: text('profile_picture'), //??
     bankToken: varchar("bank_token", { length: 255 }).unique(),
     expectedSalary: doublePrecision("expected_salary"),
     createdAt: timestamp("created_at").defaultNow().notNull(),

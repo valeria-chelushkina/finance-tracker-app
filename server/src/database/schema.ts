@@ -21,7 +21,7 @@ import {
   unique,
 } from "drizzle-orm/pg-core";
 
-import { users } from "@server/modules/user/user.modules.js";
+import { users } from "@server/modules/user/user.module.js";
 
 export const banksEnum = pgEnum("bank_name", ["monobank"]);
 

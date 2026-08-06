@@ -1,5 +1,5 @@
 import UserRepository from "./user.repository.js";
-import type { User, NewUser } from "./user.modules.js";
+import type { User, NewUser } from "./user.module.js";
 import NotFoundError from "../../errors/notFoundError.js";
 
 export default class UserService {
@@ -14,7 +14,7 @@ export default class UserService {
   async getUserById(id: number): Promise<User | null> {
     const user = await this.userRepository.getUserById(id);
 
-    if (user) {
+    if (!user) {
       throw new NotFoundError(
         "No user with such ID was found in database! Can't get info of non-existing user.",
       );

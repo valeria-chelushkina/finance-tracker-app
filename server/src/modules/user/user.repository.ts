@@ -1,5 +1,5 @@
-import type { User, NewUser } from "@server/modules/user/user.modules.js";
-import { users } from "@server/modules/user/user.modules.js";
+import type { User, NewUser } from "@server/modules/user/user.module.js";
+import { users } from "@server/modules/user/user.module.js";
 import { db, DbClient } from "@server/database/databaseClient.js";
 import { eq } from "drizzle-orm";
 
