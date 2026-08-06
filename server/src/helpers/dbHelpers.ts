@@ -1,6 +1,7 @@
 import { integer, check } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import * as data from "@server/config/currencies.json" with { type: "json" };
+import { ValidationError } from "@server/errors/AppError.js";
 
 // get all ISO numbers from json file (maybe will improve and get not only ISO but also other values)
 const validIsoNums = Object.values(data.default)
@@ -30,6 +31,8 @@ export function validateBudgetCreation(year: number, month: number) {
   }
 
   if (year === currentYear && month < currentMonth) {
-    throw new Error("Cannot budget for past months in the current year.");
+    throw new ValidationError(
+      "Cannot budget for past months in the current year.",
+    );
   }
 }

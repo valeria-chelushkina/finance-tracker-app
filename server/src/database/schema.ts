@@ -1,7 +1,10 @@
 // Database tables
 // Some tables, as for now, are built to fit monobank api
 
-import { isoCurrencyColumn, isoCurrencyCheck } from '@server/helpers/dbHelpers.js';
+import {
+  isoCurrencyColumn,
+  isoCurrencyCheck,
+} from "@server/helpers/dbHelpers.js";
 import { sql } from "drizzle-orm";
 import {
   integer,
@@ -19,20 +22,41 @@ import {
 } from "drizzle-orm/pg-core";
 
 import { users } from "@server/modules/user/user.module.js";
-import {BankProviders, PaymentTypes, CashbackTypes, PaymentFrequencyTypes, CardTypes} from "@server/types/dbEnums.js";
+import {
+  BankProviders,
+  PaymentTypes,
+  CashbackTypes,
+  PaymentFrequencyTypes,
+  CardTypes,
+} from "@server/types/dbEnums.js";
 
-export const banksEnum = pgEnum("bank_name", Object.values(BankProviders) as [string, ...string[]]);
+export const banksEnum = pgEnum(
+  "bank_name",
+  Object.values(BankProviders) as [string, ...string[]],
+);
 
-export const paymentTypesEnum = pgEnum("paument_type", Object.values(PaymentTypes) as [string, ...string[]]);
+export const paymentTypesEnum = pgEnum(
+  "paument_type",
+  Object.values(PaymentTypes) as [string, ...string[]],
+);
 
-export const cashbackTypesEnum = pgEnum("cashback_type", Object.values(CashbackTypes) as [string, ...string[]]);
+export const cashbackTypesEnum = pgEnum(
+  "cashback_type",
+  Object.values(CashbackTypes) as [string, ...string[]],
+);
 
 // 1: transaction happens every * days
 // 2: transaction happens on * day of every month
-export const frequencyTypesEnum = pgEnum("frequency_type", Object.values(PaymentFrequencyTypes) as [string, ...string[]]);
+export const frequencyTypesEnum = pgEnum(
+  "frequency_type",
+  Object.values(PaymentFrequencyTypes) as [string, ...string[]],
+);
 
 // monobank card types
-export const typesEnum = pgEnum("type", Object.values(CardTypes) as [string, ...string[]]);
+export const typesEnum = pgEnum(
+  "type",
+  Object.values(CardTypes) as [string, ...string[]],
+);
 
 export const accountsTable = pgTable(
   "accounts",
@@ -101,7 +125,9 @@ export const recurringTransactionsTable = pgTable(
     amount: doublePrecision().notNull(),
     currencyCode: isoCurrencyColumn(),
     nextDueDate: date("next_due_date"),
-    fruequencyType: frequencyTypesEnum().default(PaymentFrequencyTypes.NumberOfDays),
+    fruequencyType: frequencyTypesEnum().default(
+      PaymentFrequencyTypes.NumberOfDays,
+    ),
     frequency: integer().notNull(),
     isActive: boolean("is_active").default(true),
   },

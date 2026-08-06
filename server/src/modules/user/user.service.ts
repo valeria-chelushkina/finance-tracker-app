@@ -1,14 +1,21 @@
-import UserRepository from "@server/modules/user/user.repository.js";
-import type { User, UpdateUser, SafeUser } from "@server/modules/user/user.module.js";
-import NotFoundError from "@server/errors/notFoundError.js";
-import {hashPassword} from '@server/helpers/authHelpers.js';
+import { UserRepository } from "@server/modules/user/user.repository.js";
+import type {
+  User,
+  UpdateUser,
+  SafeUser,
+} from "@server/modules/user/user.module.js";
+import { NotFoundError } from "@server/errors/AppError.js";
+import { hashPassword } from "@server/helpers/authHelpers.js";
 
-export default class UserService {
+export class UserService {
   private readonly userRepository = new UserRepository();
 
   async createUser(email: string, password: string): Promise<User | null> {
     const hashedPassword: string = await hashPassword(password);
-    const createdUser = await this.userRepository.createUser(email, hashedPassword);
+    const createdUser = await this.userRepository.createUser(
+      email,
+      hashedPassword,
+    );
     return createdUser;
   }
 
