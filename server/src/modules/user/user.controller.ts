@@ -1,18 +1,18 @@
-import UserService from "./user.service.js";
+import UserService from "@server/modules/user/user.service.js";
 import express from "express";
-import type { SafeUser } from "./user.module.js";
-import NotFoundError from "../../errors/notFoundError.js";
+import type { SafeUser } from "@server/modules/user/user.module.js";
+import NotFoundError from "@server/errors/notFoundError.js";
 
 // auth is not implemented yet
 export default class UserController {
   private readonly userService = new UserService();
 
-  getUser = async (req: express.Request, res: express.Response) => {
+  findUser = async (req: express.Request, res: express.Response) => {
     try {
       const idCheck = userIdCheck(req, res);
       if (!idCheck.checkStatus) return;
 
-      const user: SafeUser | null = await this.userService.getUserById(
+      const user: SafeUser | null = await this.userService.findUserById(
         idCheck.userId,
       );
       res.json(user);

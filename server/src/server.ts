@@ -1,8 +1,9 @@
 import express, { Application, Request, Response } from "express";
-import userRouter from "./modules/user/user.routes.js";
+import userRouter from "@server/modules/user/user.routes.js";
+import {getEnvOrThrow} from '@server/utils/getEnvOrThrow.js';
 
 const app: Application = express();
-const PORT = 3000;
+const PORT = getEnvOrThrow('PORT');
 
 app.use(express.urlencoded({ extended: true }));
 

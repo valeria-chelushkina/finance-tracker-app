@@ -1,18 +1,19 @@
-import UserRepository from "./user.repository.js";
-import type { User, NewUser, SafeUser } from "./user.module.js";
-import NotFoundError from "../../errors/notFoundError.js";
+import UserRepository from "@server/modules/user/user.repository.js";
+import type { User, UpdateUser, SafeUser } from "@server/modules/user/user.module.js";
+import NotFoundError from "@server/errors/notFoundError.js";
+import {hashPassword} from '@server/helpers/authHelpers.js';
 
 export default class UserService {
   private readonly userRepository = new UserRepository();
 
-  // password hashing will be implemented
   async createUser(email: string, password: string): Promise<User | null> {
-    const createdUser = await this.userRepository.createUser(email, password);
+    const hashedPassword: string = await hashPassword(password);
+    const createdUser = await this.userRepository.createUser(email, hashedPassword);
     return createdUser;
   }
 
-  async getUserById(id: number): Promise<SafeUser | null> {
-    const user = await this.userRepository.getUserById(id);
+  async findUserById(id: number): Promise<SafeUser | null> {
+    const user = await this.userRepository.findUserById(id);
 
     if (!user) {
       throw new NotFoundError(
@@ -25,7 +26,7 @@ export default class UserService {
 
   async updateUser(
     id: number,
-    payload: Partial<NewUser>,
+    payload: Partial<UpdateUser>,
   ): Promise<SafeUser | null> {
     const updatedUser = await this.userRepository.updateUser(id, payload);
     if (!updatedUser) {

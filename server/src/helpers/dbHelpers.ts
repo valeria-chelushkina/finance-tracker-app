@@ -1,6 +1,6 @@
 import { integer, check } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
-import * as data from "../config/currencies.json" with { type: "json" };
+import * as data from "@server/config/currencies.json" with { type: "json" };
 
 // get all ISO numbers from json file (maybe will improve and get not only ISO but also other values)
 const validIsoNums = Object.values(data.default)

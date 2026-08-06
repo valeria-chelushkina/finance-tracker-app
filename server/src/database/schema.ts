@@ -1,7 +1,7 @@
 // Database tables
 // Some tables, as for now, are built to fit monobank api
 
-import { isoCurrencyColumn, isoCurrencyCheck } from '@server/helpers/db-helpers.js';
+import { isoCurrencyColumn, isoCurrencyCheck } from '@server/helpers/dbHelpers.js';
 import { sql } from "drizzle-orm";
 import {
   integer,
@@ -19,7 +19,7 @@ import {
 } from "drizzle-orm/pg-core";
 
 import { users } from "@server/modules/user/user.module.js";
-import {BankProviders, PaymentTypes, CashbackTypes, PaymentFrequencyTypes, CardTypes} from "@server/types/db-enums.js";
+import {BankProviders, PaymentTypes, CashbackTypes, PaymentFrequencyTypes, CardTypes} from "@server/types/dbEnums.js";
 
 export const banksEnum = pgEnum("bank_name", Object.values(BankProviders) as [string, ...string[]]);
 
