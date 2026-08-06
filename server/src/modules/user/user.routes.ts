@@ -1,11 +1,11 @@
-import UserController from './user.controller.js';
-import express from 'express';
+import UserController from "./user.controller.js";
+import express from "express";
 
-const userRouter = express.Router();
+const userRouter = express.Router({ mergeParams: true });
 const userController = new UserController();
 
-userRouter.get('/', userController.getUser);
-userRouter.patch('/', userController.updateUser);
-userRouter.delete('/', userController.deleteUser);
+userRouter.get("/", userController.getUser);
+userRouter.patch("/", userController.updateUser);
+userRouter.delete("/", userController.deleteUser);
 
 export default userRouter;

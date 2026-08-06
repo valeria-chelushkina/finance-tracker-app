@@ -1,10 +1,7 @@
 // Database tables
 // Some tables, as for now, are built to fit monobank api
 
-import {
-  isoCurrencyColumn,
-  isoCurrencyCheck,
-} from "@server/helpers/db-helpers.js";
+import { isoCurrencyColumn, isoCurrencyCheck } from "../helpers/db-helpers.js";
 import { sql } from "drizzle-orm";
 import {
   integer,
@@ -21,7 +18,7 @@ import {
   unique,
 } from "drizzle-orm/pg-core";
 
-import { users } from "@server/modules/user/user.module.js";
+import { users } from "../modules/user/user.module.js";
 
 export const banksEnum = pgEnum("bank_name", ["monobank"]);
 

@@ -1,10 +1,6 @@
-import type {
-  User,
-  NewUser,
-  SafeUser,
-} from "@server/modules/user/user.module.js";
-import { users } from "@server/modules/user/user.module.js";
-import { db, DbClient } from "@server/database/databaseClient.js";
+import type { User, NewUser, SafeUser } from "./user.module.js";
+import { users } from "./user.module.js";
+import { db, DbClient } from "../../database/databaseClient.js";
 import { eq, getColumns } from "drizzle-orm";
 
 const { passwordHash, ...otherFields } = getColumns(users);
@@ -39,7 +35,7 @@ export default class UserRepository {
     const [updatedUser] = await this.DbClient.update(users)
       .set(updatedFields)
       .where(eq(users.id, id))
-      .returning({...otherFields});
+      .returning({ ...otherFields });
     return updatedUser || null;
   }
 
