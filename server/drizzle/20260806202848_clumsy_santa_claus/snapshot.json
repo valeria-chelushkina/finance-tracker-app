@@ -1,0 +1,1668 @@
+{
+  "version": "8",
+  "dialect": "postgres",
+  "id": "5d82ab0e-2d25-473d-8952-b53afb80001a",
+  "prevIds": [
+    "00000000-0000-0000-0000-000000000000"
+  ],
+  "ddl": [
+    {
+      "values": [
+        "monobank"
+      ],
+      "name": "bank_name",
+      "entityType": "enums",
+      "schema": "public"
+    },
+    {
+      "values": [
+        "None",
+        "UAH",
+        "Miles"
+      ],
+      "name": "cashback_type",
+      "entityType": "enums",
+      "schema": "public"
+    },
+    {
+      "values": [
+        "number_of_days",
+        "date_of_month"
+      ],
+      "name": "frequency_type",
+      "entityType": "enums",
+      "schema": "public"
+    },
+    {
+      "values": [
+        "card",
+        "cash"
+      ],
+      "name": "paument_type",
+      "entityType": "enums",
+      "schema": "public"
+    },
+    {
+      "values": [
+        "black",
+        "white",
+        "platinum",
+        "iron",
+        "fop",
+        "yellow",
+        "eAid"
+      ],
+      "name": "type",
+      "entityType": "enums",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "accounts",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "budgets",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "categories",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "jars",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "recurring_transactions",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "statistics",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "transactions",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "wishlists",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "users",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": {
+        "type": "always",
+        "name": "accounts_id_seq",
+        "increment": "1",
+        "startWith": "1",
+        "minValue": "1",
+        "maxValue": "2147483647",
+        "cache": 1,
+        "cycle": false
+      },
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "accounts"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "user_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "accounts"
+    },
+    {
+      "type": "bank_name",
+      "typeSchema": "public",
+      "notNull": true,
+      "dimensions": 0,
+      "default": "'monobank'",
+      "generated": null,
+      "identity": null,
+      "name": "bankName",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "accounts"
+    },
+    {
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "card_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "accounts"
+    },
+    {
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "send_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "accounts"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": "980",
+      "generated": null,
+      "identity": null,
+      "name": "currency_code",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "accounts"
+    },
+    {
+      "type": "cashback_type",
+      "typeSchema": "public",
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "cashbackType",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "accounts"
+    },
+    {
+      "type": "double precision",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "balance",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "accounts"
+    },
+    {
+      "type": "double precision",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "credit_limit",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "accounts"
+    },
+    {
+      "type": "varchar(19)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 1,
+      "default": "'{}'",
+      "generated": null,
+      "identity": null,
+      "name": "masked_pan",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "accounts"
+    },
+    {
+      "type": "type",
+      "typeSchema": "public",
+      "notNull": true,
+      "dimensions": 0,
+      "default": "'black'",
+      "generated": null,
+      "identity": null,
+      "name": "type",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "accounts"
+    },
+    {
+      "type": "varchar(34)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "iban",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "accounts"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": {
+        "type": "always",
+        "name": "budgets_id_seq",
+        "increment": "1",
+        "startWith": "1",
+        "minValue": "1",
+        "maxValue": "2147483647",
+        "cache": 1,
+        "cycle": false
+      },
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "budgets"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "user_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "budgets"
+    },
+    {
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "category",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "budgets"
+    },
+    {
+      "type": "jsonb",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "items",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "budgets"
+    },
+    {
+      "type": "double precision",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "limit_amount",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "budgets"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "month",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "budgets"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "year",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "budgets"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": {
+        "type": "always",
+        "name": "categories_id_seq",
+        "increment": "1",
+        "startWith": "1",
+        "minValue": "1",
+        "maxValue": "2147483647",
+        "cache": 1,
+        "cycle": false
+      },
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "categories"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "user_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "categories"
+    },
+    {
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "name",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "categories"
+    },
+    {
+      "type": "varchar(7)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "color",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "categories"
+    },
+    {
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "icon",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "categories"
+    },
+    {
+      "type": "boolean",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "false",
+      "generated": null,
+      "identity": null,
+      "name": "is_composite",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "categories"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 1,
+      "default": "ARRAY[]",
+      "generated": null,
+      "identity": null,
+      "name": "mcc_codes",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "categories"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 1,
+      "default": "ARRAY[]",
+      "generated": null,
+      "identity": null,
+      "name": "included_categories",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "categories"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": {
+        "type": "always",
+        "name": "jars_id_seq",
+        "increment": "1",
+        "startWith": "1",
+        "minValue": "1",
+        "maxValue": "2147483647",
+        "cache": 1,
+        "cycle": false
+      },
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "jars"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "user_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "jars"
+    },
+    {
+      "type": "varchar",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "jar_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "jars"
+    },
+    {
+      "type": "varchar",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "send_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "jars"
+    },
+    {
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "title",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "jars"
+    },
+    {
+      "type": "varchar",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "length: 255",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "jars"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": "980",
+      "generated": null,
+      "identity": null,
+      "name": "currency_code",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "jars"
+    },
+    {
+      "type": "double precision",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "balance",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "jars"
+    },
+    {
+      "type": "double precision",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "goal",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "jars"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": {
+        "type": "always",
+        "name": "recurring_transactions_id_seq",
+        "increment": "1",
+        "startWith": "1",
+        "minValue": "1",
+        "maxValue": "2147483647",
+        "cache": 1,
+        "cycle": false
+      },
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "recurring_transactions"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "user_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "recurring_transactions"
+    },
+    {
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "name",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "recurring_transactions"
+    },
+    {
+      "type": "double precision",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "amount",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "recurring_transactions"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": "980",
+      "generated": null,
+      "identity": null,
+      "name": "currency_code",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "recurring_transactions"
+    },
+    {
+      "type": "date",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "next_due_date",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "recurring_transactions"
+    },
+    {
+      "type": "frequency_type",
+      "typeSchema": "public",
+      "notNull": false,
+      "dimensions": 0,
+      "default": "'number_of_days'",
+      "generated": null,
+      "identity": null,
+      "name": "fruequencyType",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "recurring_transactions"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "frequency",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "recurring_transactions"
+    },
+    {
+      "type": "boolean",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": "true",
+      "generated": null,
+      "identity": null,
+      "name": "is_active",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "recurring_transactions"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": {
+        "type": "always",
+        "name": "statistics_id_seq",
+        "increment": "1",
+        "startWith": "1",
+        "minValue": "1",
+        "maxValue": "2147483647",
+        "cache": 1,
+        "cycle": false
+      },
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "statistics"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "user_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "statistics"
+    },
+    {
+      "type": "jsonb",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "categories",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "statistics"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "month",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "statistics"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "year",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "statistics"
+    },
+    {
+      "type": "double precision",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "amount",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "statistics"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": "980",
+      "generated": null,
+      "identity": null,
+      "name": "currency_code",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "statistics"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": {
+        "type": "always",
+        "name": "transactions_id_seq",
+        "increment": "1",
+        "startWith": "1",
+        "minValue": "1",
+        "maxValue": "2147483647",
+        "cache": 1,
+        "cycle": false
+      },
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "transactions"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "user_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "transactions"
+    },
+    {
+      "type": "paument_type",
+      "typeSchema": "public",
+      "notNull": false,
+      "dimensions": 0,
+      "default": "'card'",
+      "generated": null,
+      "identity": null,
+      "name": "paymentType",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "transactions"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "account_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "transactions"
+    },
+    {
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "transaction_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "transactions"
+    },
+    {
+      "type": "timestamp",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "transaction_time",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "transactions"
+    },
+    {
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "description",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "transactions"
+    },
+    {
+      "type": "double precision",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "amount",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "transactions"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": "980",
+      "generated": null,
+      "identity": null,
+      "name": "currency_code",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "transactions"
+    },
+    {
+      "type": "double precision",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "commission_rate",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "transactions"
+    },
+    {
+      "type": "double precision",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "cashback_amount",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "transactions"
+    },
+    {
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "comment",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "transactions"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": {
+        "type": "always",
+        "name": "wishlists_id_seq",
+        "increment": "1",
+        "startWith": "1",
+        "minValue": "1",
+        "maxValue": "2147483647",
+        "cache": 1,
+        "cycle": false
+      },
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "wishlists"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "user_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "wishlists"
+    },
+    {
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "name",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "wishlists"
+    },
+    {
+      "type": "double precision",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "amount",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "wishlists"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": "980",
+      "generated": null,
+      "identity": null,
+      "name": "currency_code",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "wishlists"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "url",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "wishlists"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": {
+        "type": "always",
+        "name": "users_id_seq",
+        "increment": "1",
+        "startWith": "1",
+        "minValue": "1",
+        "maxValue": "2147483647",
+        "cache": 1,
+        "cycle": false
+      },
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "users"
+    },
+    {
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "email",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "users"
+    },
+    {
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "password_hash",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "users"
+    },
+    {
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "name",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "users"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "profile_picture",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "users"
+    },
+    {
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "bank_token",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "users"
+    },
+    {
+      "type": "double precision",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "expected_salary",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "users"
+    },
+    {
+      "type": "timestamp",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "name": "created_at",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "users"
+    },
+    {
+      "type": "timestamp",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "name": "updated_at",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "users"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "user_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "users",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "name": "accounts_user_id_users_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "accounts"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "user_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "users",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "name": "budgets_user_id_users_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "budgets"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "user_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "users",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "name": "categories_user_id_users_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "categories"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "user_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "users",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "name": "jars_user_id_users_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "jars"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "user_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "users",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "name": "recurring_transactions_user_id_users_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "recurring_transactions"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "user_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "users",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "name": "statistics_user_id_users_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "statistics"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "user_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "users",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "name": "transactions_user_id_users_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "transactions"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "account_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "accounts",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "name": "transactions_account_id_accounts_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "transactions"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "user_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "users",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "name": "wishlists_user_id_users_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "wishlists"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "accounts_pkey",
+      "schema": "public",
+      "table": "accounts",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "budgets_pkey",
+      "schema": "public",
+      "table": "budgets",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "categories_pkey",
+      "schema": "public",
+      "table": "categories",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "jars_pkey",
+      "schema": "public",
+      "table": "jars",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "recurring_transactions_pkey",
+      "schema": "public",
+      "table": "recurring_transactions",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "statistics_pkey",
+      "schema": "public",
+      "table": "statistics",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "transactions_pkey",
+      "schema": "public",
+      "table": "transactions",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "wishlists_pkey",
+      "schema": "public",
+      "table": "wishlists",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "users_pkey",
+      "schema": "public",
+      "table": "users",
+      "entityType": "pks"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        "category",
+        "month",
+        "year"
+      ],
+      "nullsNotDistinct": false,
+      "name": "unique_budget",
+      "entityType": "uniques",
+      "schema": "public",
+      "table": "budgets"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        "name",
+        "amount",
+        "url"
+      ],
+      "nullsNotDistinct": false,
+      "name": "unique_wishlist_item",
+      "entityType": "uniques",
+      "schema": "public",
+      "table": "wishlists"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "card_id"
+      ],
+      "nullsNotDistinct": false,
+      "name": "accounts_card_id_key",
+      "schema": "public",
+      "table": "accounts",
+      "entityType": "uniques"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "send_id"
+      ],
+      "nullsNotDistinct": false,
+      "name": "accounts_send_id_key",
+      "schema": "public",
+      "table": "accounts",
+      "entityType": "uniques"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "name"
+      ],
+      "nullsNotDistinct": false,
+      "name": "categories_name_key",
+      "schema": "public",
+      "table": "categories",
+      "entityType": "uniques"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "jar_id"
+      ],
+      "nullsNotDistinct": false,
+      "name": "jars_jar_id_key",
+      "schema": "public",
+      "table": "jars",
+      "entityType": "uniques"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "send_id"
+      ],
+      "nullsNotDistinct": false,
+      "name": "jars_send_id_key",
+      "schema": "public",
+      "table": "jars",
+      "entityType": "uniques"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "name"
+      ],
+      "nullsNotDistinct": false,
+      "name": "recurring_transactions_name_key",
+      "schema": "public",
+      "table": "recurring_transactions",
+      "entityType": "uniques"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "transaction_id"
+      ],
+      "nullsNotDistinct": false,
+      "name": "transactions_transaction_id_key",
+      "schema": "public",
+      "table": "transactions",
+      "entityType": "uniques"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "email"
+      ],
+      "nullsNotDistinct": false,
+      "name": "users_email_key",
+      "schema": "public",
+      "table": "users",
+      "entityType": "uniques"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "bank_token"
+      ],
+      "nullsNotDistinct": false,
+      "name": "users_bank_token_key",
+      "schema": "public",
+      "table": "users",
+      "entityType": "uniques"
+    },
+    {
+      "value": "\"currency_code\" IN (784, 971, 8, 51, 532, 973, 32, 36, 533, 944, 977, 52, 50, 975, 48, 108, 60, 96, 68, 986, 44, 64, 72, 933, 84, 124, 976, 756, 152, 156, 170, 188, 931, 192, 132, 203, 262, 208, 214, 12, 818, 232, 230, 978, 242, 238, 826, 981, 936, 292, 270, 324, 320, 328, 344, 340, 191, 332, 348, 360, 376, 356, 368, 364, 352, 388, 400, 392, 404, 417, 116, 174, 408, 410, 414, 136, 398, 418, 422, 144, 430, 426, 434, 504, 498, 969, 807, 104, 496, 446, 929, 480, 462, 454, 484, 458, 943, 516, 566, 558, 578, 524, 554, 512, 590, 604, 598, 608, 586, 985, 600, 634, 946, 941, 643, 646, 682, 90, 690, 938, 752, 702, 654, 694, 706, 968, 728, 930, 222, 760, 748, 764, 972, 934, 788, 776, 949, 780, 901, 834, 980, 800, 840, 858, 860, 928, 704, 548, 882, 950, 951, 952, 953, 886, 710, 967, 932)",
+      "name": "accounts_currency_code_check",
+      "entityType": "checks",
+      "schema": "public",
+      "table": "accounts"
+    },
+    {
+      "value": "(\"cashbackType\" = 'Miles' AND (\"type\" = 'platinum' OR \"type\" = 'iron')) OR (\"cashbackType\" <> 'Miles' OR \"cashbackType\" IS NULL)",
+      "name": "cashback_type_card",
+      "entityType": "checks",
+      "schema": "public",
+      "table": "accounts"
+    },
+    {
+      "value": "\"month\" BETWEEN 1 AND 12",
+      "name": "month_budget_check",
+      "entityType": "checks",
+      "schema": "public",
+      "table": "budgets"
+    },
+    {
+      "value": "\"limit_amount\" >= 0",
+      "name": "limit_amount_check",
+      "entityType": "checks",
+      "schema": "public",
+      "table": "budgets"
+    },
+    {
+      "value": "\"currency_code\" IN (784, 971, 8, 51, 532, 973, 32, 36, 533, 944, 977, 52, 50, 975, 48, 108, 60, 96, 68, 986, 44, 64, 72, 933, 84, 124, 976, 756, 152, 156, 170, 188, 931, 192, 132, 203, 262, 208, 214, 12, 818, 232, 230, 978, 242, 238, 826, 981, 936, 292, 270, 324, 320, 328, 344, 340, 191, 332, 348, 360, 376, 356, 368, 364, 352, 388, 400, 392, 404, 417, 116, 174, 408, 410, 414, 136, 398, 418, 422, 144, 430, 426, 434, 504, 498, 969, 807, 104, 496, 446, 929, 480, 462, 454, 484, 458, 943, 516, 566, 558, 578, 524, 554, 512, 590, 604, 598, 608, 586, 985, 600, 634, 946, 941, 643, 646, 682, 90, 690, 938, 752, 702, 654, 694, 706, 968, 728, 930, 222, 760, 748, 764, 972, 934, 788, 776, 949, 780, 901, 834, 980, 800, 840, 858, 860, 928, 704, 548, 882, 950, 951, 952, 953, 886, 710, 967, 932)",
+      "name": "jars_currency_code_check",
+      "entityType": "checks",
+      "schema": "public",
+      "table": "jars"
+    },
+    {
+      "value": "\"currency_code\" IN (784, 971, 8, 51, 532, 973, 32, 36, 533, 944, 977, 52, 50, 975, 48, 108, 60, 96, 68, 986, 44, 64, 72, 933, 84, 124, 976, 756, 152, 156, 170, 188, 931, 192, 132, 203, 262, 208, 214, 12, 818, 232, 230, 978, 242, 238, 826, 981, 936, 292, 270, 324, 320, 328, 344, 340, 191, 332, 348, 360, 376, 356, 368, 364, 352, 388, 400, 392, 404, 417, 116, 174, 408, 410, 414, 136, 398, 418, 422, 144, 430, 426, 434, 504, 498, 969, 807, 104, 496, 446, 929, 480, 462, 454, 484, 458, 943, 516, 566, 558, 578, 524, 554, 512, 590, 604, 598, 608, 586, 985, 600, 634, 946, 941, 643, 646, 682, 90, 690, 938, 752, 702, 654, 694, 706, 968, 728, 930, 222, 760, 748, 764, 972, 934, 788, 776, 949, 780, 901, 834, 980, 800, 840, 858, 860, 928, 704, 548, 882, 950, 951, 952, 953, 886, 710, 967, 932)",
+      "name": "recurring_transactions_currency_code_check",
+      "entityType": "checks",
+      "schema": "public",
+      "table": "recurring_transactions"
+    },
+    {
+      "value": "\"currency_code\" IN (784, 971, 8, 51, 532, 973, 32, 36, 533, 944, 977, 52, 50, 975, 48, 108, 60, 96, 68, 986, 44, 64, 72, 933, 84, 124, 976, 756, 152, 156, 170, 188, 931, 192, 132, 203, 262, 208, 214, 12, 818, 232, 230, 978, 242, 238, 826, 981, 936, 292, 270, 324, 320, 328, 344, 340, 191, 332, 348, 360, 376, 356, 368, 364, 352, 388, 400, 392, 404, 417, 116, 174, 408, 410, 414, 136, 398, 418, 422, 144, 430, 426, 434, 504, 498, 969, 807, 104, 496, 446, 929, 480, 462, 454, 484, 458, 943, 516, 566, 558, 578, 524, 554, 512, 590, 604, 598, 608, 586, 985, 600, 634, 946, 941, 643, 646, 682, 90, 690, 938, 752, 702, 654, 694, 706, 968, 728, 930, 222, 760, 748, 764, 972, 934, 788, 776, 949, 780, 901, 834, 980, 800, 840, 858, 860, 928, 704, 548, 882, 950, 951, 952, 953, 886, 710, 967, 932)",
+      "name": "statistics_currency_code_check",
+      "entityType": "checks",
+      "schema": "public",
+      "table": "statistics"
+    },
+    {
+      "value": "\"month\" BETWEEN 1 AND 12",
+      "name": "month_statistics_check",
+      "entityType": "checks",
+      "schema": "public",
+      "table": "statistics"
+    },
+    {
+      "value": "\"currency_code\" IN (784, 971, 8, 51, 532, 973, 32, 36, 533, 944, 977, 52, 50, 975, 48, 108, 60, 96, 68, 986, 44, 64, 72, 933, 84, 124, 976, 756, 152, 156, 170, 188, 931, 192, 132, 203, 262, 208, 214, 12, 818, 232, 230, 978, 242, 238, 826, 981, 936, 292, 270, 324, 320, 328, 344, 340, 191, 332, 348, 360, 376, 356, 368, 364, 352, 388, 400, 392, 404, 417, 116, 174, 408, 410, 414, 136, 398, 418, 422, 144, 430, 426, 434, 504, 498, 969, 807, 104, 496, 446, 929, 480, 462, 454, 484, 458, 943, 516, 566, 558, 578, 524, 554, 512, 590, 604, 598, 608, 586, 985, 600, 634, 946, 941, 643, 646, 682, 90, 690, 938, 752, 702, 654, 694, 706, 968, 728, 930, 222, 760, 748, 764, 972, 934, 788, 776, 949, 780, 901, 834, 980, 800, 840, 858, 860, 928, 704, 548, 882, 950, 951, 952, 953, 886, 710, 967, 932)",
+      "name": "transactions_currency_code_check",
+      "entityType": "checks",
+      "schema": "public",
+      "table": "transactions"
+    },
+    {
+      "value": "\"currency_code\" IN (784, 971, 8, 51, 532, 973, 32, 36, 533, 944, 977, 52, 50, 975, 48, 108, 60, 96, 68, 986, 44, 64, 72, 933, 84, 124, 976, 756, 152, 156, 170, 188, 931, 192, 132, 203, 262, 208, 214, 12, 818, 232, 230, 978, 242, 238, 826, 981, 936, 292, 270, 324, 320, 328, 344, 340, 191, 332, 348, 360, 376, 356, 368, 364, 352, 388, 400, 392, 404, 417, 116, 174, 408, 410, 414, 136, 398, 418, 422, 144, 430, 426, 434, 504, 498, 969, 807, 104, 496, 446, 929, 480, 462, 454, 484, 458, 943, 516, 566, 558, 578, 524, 554, 512, 590, 604, 598, 608, 586, 985, 600, 634, 946, 941, 643, 646, 682, 90, 690, 938, 752, 702, 654, 694, 706, 968, 728, 930, 222, 760, 748, 764, 972, 934, 788, 776, 949, 780, 901, 834, 980, 800, 840, 858, 860, 928, 704, 548, 882, 950, 951, 952, 953, 886, 710, 967, 932)",
+      "name": "wishlists_currency_code_check",
+      "entityType": "checks",
+      "schema": "public",
+      "table": "wishlists"
+    },
+    {
+      "value": "\"expected_salary\" > 0",
+      "name": "salary_check",
+      "entityType": "checks",
+      "schema": "public",
+      "table": "users"
+    }
+  ],
+  "renames": []
+}
