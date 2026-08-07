@@ -1,8 +1,5 @@
 import { defineConfig } from "drizzle-kit";
-import dotenv from "dotenv";
 import { getEnvOrThrow } from "./src/utils/getEnvOrThrow.js";
-
-dotenv.config();
 
 export default defineConfig({
   out: "./drizzle",

@@ -7,7 +7,7 @@ export const errorMiddleware = (
   res: Response,
   next: NextFunction,
 ) => {
-  // 1. Handle custom application errors (NotFoundError, ValidationError, etc.)
+
   if (err instanceof AppError) {
     res.status(err.status).json({
       status: "error",
@@ -17,7 +17,6 @@ export const errorMiddleware = (
     return;
   }
 
-  // 2. Handle specific database/ORM errors (like Drizzle's "No values to set")
   if (err.message === "No values to set") {
     res.status(400).json({
       status: "error",
@@ -27,7 +26,6 @@ export const errorMiddleware = (
     return;
   }
 
-  // 3. Fallback for unhandled/internal server errors
   console.error("Unhandled error occurred:", err);
 
   res.status(500).json({

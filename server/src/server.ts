@@ -1,4 +1,4 @@
-import express, { Application, Request, Response } from "express";
+import express, { Application } from "express";
 import userRouter from "@server/modules/user/user.routes.js";
 import {getEnvOrThrow} from '@server/utils/getEnvOrThrow.js';
 import {errorMiddleware} from '@server/middlewares/errorMiddleware.js';
