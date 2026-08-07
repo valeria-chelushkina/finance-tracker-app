@@ -1,16 +1,18 @@
-import express, { Application, Request, Response } from "express";
+import express, { Application } from "express";
+import userRouter from "@server/modules/user/user.routes.js";
+import {getEnvOrThrow} from '@server/utils/getEnvOrThrow.js';
+import {errorMiddleware} from '@server/middlewares/errorMiddleware.js';
 
 const app: Application = express();
-const port = 3000;
+const PORT = getEnvOrThrow('PORT');
 
 app.use(express.urlencoded({ extended: true }));
 
 app.use(express.json());
 
-app.get('/', (req: Request, res: Response) => {
-  res.send("Hello!");
-});
+app.use("/user", userRouter);
+app.use(errorMiddleware);
 
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
 });

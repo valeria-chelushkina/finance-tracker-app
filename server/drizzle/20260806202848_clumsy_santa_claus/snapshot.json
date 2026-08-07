@@ -1,7 +1,7 @@
 {
   "version": "8",
   "dialect": "postgres",
-  "id": "f35fb1b9-e2d9-4989-81f7-55fda42bbfd5",
+  "id": "5d82ab0e-2d25-473d-8952-b53afb80001a",
   "prevIds": [
     "00000000-0000-0000-0000-000000000000"
   ],
@@ -100,13 +100,13 @@
     },
     {
       "isRlsEnabled": false,
-      "name": "users",
+      "name": "wishlists",
       "entityType": "tables",
       "schema": "public"
     },
     {
       "isRlsEnabled": false,
-      "name": "wishlists",
+      "name": "users",
       "entityType": "tables",
       "schema": "public"
     },
@@ -1014,132 +1014,6 @@
       "generated": null,
       "identity": {
         "type": "always",
-        "name": "users_id_seq",
-        "increment": "1",
-        "startWith": "1",
-        "minValue": "1",
-        "maxValue": "2147483647",
-        "cache": 1,
-        "cycle": false
-      },
-      "name": "id",
-      "entityType": "columns",
-      "schema": "public",
-      "table": "users"
-    },
-    {
-      "type": "varchar(255)",
-      "typeSchema": null,
-      "notNull": true,
-      "dimensions": 0,
-      "default": null,
-      "generated": null,
-      "identity": null,
-      "name": "username",
-      "entityType": "columns",
-      "schema": "public",
-      "table": "users"
-    },
-    {
-      "type": "varchar(255)",
-      "typeSchema": null,
-      "notNull": false,
-      "dimensions": 0,
-      "default": null,
-      "generated": null,
-      "identity": null,
-      "name": "password_hash",
-      "entityType": "columns",
-      "schema": "public",
-      "table": "users"
-    },
-    {
-      "type": "varchar(255)",
-      "typeSchema": null,
-      "notNull": false,
-      "dimensions": 0,
-      "default": null,
-      "generated": null,
-      "identity": null,
-      "name": "name",
-      "entityType": "columns",
-      "schema": "public",
-      "table": "users"
-    },
-    {
-      "type": "text",
-      "typeSchema": null,
-      "notNull": false,
-      "dimensions": 0,
-      "default": null,
-      "generated": null,
-      "identity": null,
-      "name": "profilePicture",
-      "entityType": "columns",
-      "schema": "public",
-      "table": "users"
-    },
-    {
-      "type": "varchar(255)",
-      "typeSchema": null,
-      "notNull": false,
-      "dimensions": 0,
-      "default": null,
-      "generated": null,
-      "identity": null,
-      "name": "bank_token",
-      "entityType": "columns",
-      "schema": "public",
-      "table": "users"
-    },
-    {
-      "type": "double precision",
-      "typeSchema": null,
-      "notNull": false,
-      "dimensions": 0,
-      "default": null,
-      "generated": null,
-      "identity": null,
-      "name": "expected_salary",
-      "entityType": "columns",
-      "schema": "public",
-      "table": "users"
-    },
-    {
-      "type": "timestamp",
-      "typeSchema": null,
-      "notNull": true,
-      "dimensions": 0,
-      "default": "now()",
-      "generated": null,
-      "identity": null,
-      "name": "created_at",
-      "entityType": "columns",
-      "schema": "public",
-      "table": "users"
-    },
-    {
-      "type": "timestamp",
-      "typeSchema": null,
-      "notNull": false,
-      "dimensions": 0,
-      "default": null,
-      "generated": null,
-      "identity": null,
-      "name": "updated_at",
-      "entityType": "columns",
-      "schema": "public",
-      "table": "users"
-    },
-    {
-      "type": "integer",
-      "typeSchema": null,
-      "notNull": true,
-      "dimensions": 0,
-      "default": null,
-      "generated": null,
-      "identity": {
-        "type": "always",
         "name": "wishlists_id_seq",
         "increment": "1",
         "startWith": "1",
@@ -1217,6 +1091,132 @@
       "entityType": "columns",
       "schema": "public",
       "table": "wishlists"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": {
+        "type": "always",
+        "name": "users_id_seq",
+        "increment": "1",
+        "startWith": "1",
+        "minValue": "1",
+        "maxValue": "2147483647",
+        "cache": 1,
+        "cycle": false
+      },
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "users"
+    },
+    {
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "email",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "users"
+    },
+    {
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "password_hash",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "users"
+    },
+    {
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "name",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "users"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "profile_picture",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "users"
+    },
+    {
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "bank_token",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "users"
+    },
+    {
+      "type": "double precision",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "expected_salary",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "users"
+    },
+    {
+      "type": "timestamp",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "name": "created_at",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "users"
+    },
+    {
+      "type": "timestamp",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "name": "updated_at",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "users"
     },
     {
       "nameExplicit": false,
@@ -1446,9 +1446,9 @@
         "id"
       ],
       "nameExplicit": false,
-      "name": "users_pkey",
+      "name": "wishlists_pkey",
       "schema": "public",
-      "table": "users",
+      "table": "wishlists",
       "entityType": "pks"
     },
     {
@@ -1456,9 +1456,9 @@
         "id"
       ],
       "nameExplicit": false,
-      "name": "wishlists_pkey",
+      "name": "users_pkey",
       "schema": "public",
-      "table": "wishlists",
+      "table": "users",
       "entityType": "pks"
     },
     {
@@ -1567,10 +1567,10 @@
     {
       "nameExplicit": false,
       "columns": [
-        "username"
+        "email"
       ],
       "nullsNotDistinct": false,
-      "name": "users_username_key",
+      "name": "users_email_key",
       "schema": "public",
       "table": "users",
       "entityType": "uniques"
@@ -1650,18 +1650,18 @@
       "table": "transactions"
     },
     {
-      "value": "\"expected_salary\" > 0",
-      "name": "salary_check",
-      "entityType": "checks",
-      "schema": "public",
-      "table": "users"
-    },
-    {
       "value": "\"currency_code\" IN (784, 971, 8, 51, 532, 973, 32, 36, 533, 944, 977, 52, 50, 975, 48, 108, 60, 96, 68, 986, 44, 64, 72, 933, 84, 124, 976, 756, 152, 156, 170, 188, 931, 192, 132, 203, 262, 208, 214, 12, 818, 232, 230, 978, 242, 238, 826, 981, 936, 292, 270, 324, 320, 328, 344, 340, 191, 332, 348, 360, 376, 356, 368, 364, 352, 388, 400, 392, 404, 417, 116, 174, 408, 410, 414, 136, 398, 418, 422, 144, 430, 426, 434, 504, 498, 969, 807, 104, 496, 446, 929, 480, 462, 454, 484, 458, 943, 516, 566, 558, 578, 524, 554, 512, 590, 604, 598, 608, 586, 985, 600, 634, 946, 941, 643, 646, 682, 90, 690, 938, 752, 702, 654, 694, 706, 968, 728, 930, 222, 760, 748, 764, 972, 934, 788, 776, 949, 780, 901, 834, 980, 800, 840, 858, 860, 928, 704, 548, 882, 950, 951, 952, 953, 886, 710, 967, 932)",
       "name": "wishlists_currency_code_check",
       "entityType": "checks",
       "schema": "public",
       "table": "wishlists"
+    },
+    {
+      "value": "\"expected_salary\" > 0",
+      "name": "salary_check",
+      "entityType": "checks",
+      "schema": "public",
+      "table": "users"
     }
   ],
   "renames": []
