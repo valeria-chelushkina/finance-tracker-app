@@ -20,3 +20,9 @@ export class ValidationError extends AppError {
     super(message, 400);
   }
 }
+
+export class AuthError extends AppError {
+  constructor(message = "Incorrect credentials.") {
+    super(message, 401);
+  }
+}

@@ -2,16 +2,16 @@ import { UserRepository } from "@server/modules/user/user.repository.js";
 import type {
   User,
   UpdateUser,
-  SafeUser,
 } from "@server/modules/user/user.module.js";
 import { NotFoundError } from "@server/errors/AppError.js";
-import { hashPassword } from "@server/helpers/authHelpers.js";
+import { AuthService } from "@server/modules/auth/auth.service.js";
 
 export class UserService {
   private readonly userRepository = new UserRepository();
+  private readonly authService = new AuthService();
 
   async createUser(email: string, password: string): Promise<User | null> {
-    const hashedPassword: string = await hashPassword(password);
+    const hashedPassword: string = await this.authService.hashPassword(password);
     const createdUser = await this.userRepository.createUser(
       email,
       hashedPassword,
@@ -19,7 +19,7 @@ export class UserService {
     return createdUser;
   }
 
-  async findUserById(id: number): Promise<SafeUser | null> {
+  async findUserById(id: number): Promise<User | null> {
     const user = await this.userRepository.findUserById(id);
 
     if (!user) {
@@ -34,7 +34,7 @@ export class UserService {
   async updateUser(
     id: number,
     payload: Partial<UpdateUser>,
-  ): Promise<SafeUser | null> {
+  ): Promise<User | null> {
     const updatedUser = await this.userRepository.updateUser(id, payload);
     if (!updatedUser) {
       throw new NotFoundError(

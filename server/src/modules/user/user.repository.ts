@@ -1,13 +1,10 @@
 import type {
   User,
   UpdateUser,
-  SafeUser,
 } from "@server/modules/user/user.module.js";
 import { users } from "@server/modules/user/user.module.js";
 import { db, DbClient } from "@server/database/databaseClient.js";
 import { eq, getColumns } from "drizzle-orm";
-
-const { passwordHash, ...otherFields } = getColumns(users);
 
 export class UserRepository {
   private readonly dbClient: DbClient;
@@ -24,11 +21,20 @@ export class UserRepository {
     return createdUser;
   }
 
-  async findUserById(id: number): Promise<SafeUser | null> {
+  async findUserById(id: number): Promise<User | null> {
     const user = await this.dbClient
-      .select({ ...otherFields })
+      .select()
       .from(users)
       .where(eq(users.id, id))
+      .limit(1);
+    return user[0] || null;
+  }
+
+  async findUserByEmail(email: string): Promise<User | null> {
+    const user = await this.dbClient
+      .select()
+      .from(users)
+      .where(eq(users.email, email))
       .limit(1);
     return user[0] || null;
   }
@@ -37,12 +43,12 @@ export class UserRepository {
   async updateUser(
     id: number,
     updatedFields: Partial<UpdateUser>,
-  ): Promise<SafeUser | null> {
+  ): Promise<User | null> {
     const [updatedUser] = await this.dbClient
       .update(users)
       .set(updatedFields)
       .where(eq(users.id, id))
-      .returning({ ...otherFields });
+      .returning();
     return updatedUser || null;
   }
 

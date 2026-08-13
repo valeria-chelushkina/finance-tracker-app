@@ -1,6 +1,6 @@
 import { UserService } from "@server/modules/user/user.service.js";
 import { Request, Response } from "express";
-import type { SafeUser } from "@server/modules/user/user.module.js";
+import type { User } from "@server/modules/user/user.module.js";
 import { stringToIntCheck } from "@server/utils/controllerUtils.js";
 
 // auth is not implemented yet
@@ -10,7 +10,7 @@ export class UserController {
   findUserById = async (req: Request, res: Response) => {
     const idCheck = stringToIntCheck(req, "id");
 
-    const user: SafeUser | null = await this.userService.findUserById(idCheck);
+    const user: User | null = await this.userService.findUserById(idCheck);
     res.status(200).json(user);
   };
 
@@ -18,7 +18,7 @@ export class UserController {
     const userPayload = req.body || {};
     const idCheck = stringToIntCheck(req, "id");
 
-    const user: SafeUser | null = await this.userService.updateUser(
+    const user: User | null = await this.userService.updateUser(
       idCheck,
       userPayload,
     );
