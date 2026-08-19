@@ -9,6 +9,7 @@ export class AuthController {
   private readonly userRepository = new UserRepository();
   private readonly userService = new UserService();
 
+  // right now tokens are not stored in http-only cookies
   signUp = async (req: Request, res: Response) => {
     const { email, password } = req.body;
     const existingUser = await this.userRepository.findUserByEmail(email);
@@ -20,10 +21,12 @@ export class AuthController {
     if (!newUser) throw new Error();
 
     const accessToken = this.authService.createAccessToken(newUser.id, email);
+    const refreshToken = this.authService.createRefreshToken(newUser.id, email);
 
     res.status(201).json({
       message: "Created new user",
       accessToken: accessToken,
+      refreshToken: refreshToken,
     });
   };
 
