@@ -22,7 +22,7 @@ export class ValidationError extends AppError {
 }
 
 export class AuthError extends AppError {
-  constructor(message = "Incorrect credentials.") {
-    super(message, 401);
+  constructor(message = "Incorrect credentials.", status = 401) {
+    super(message, status);
   }
 }

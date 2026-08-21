@@ -3,6 +3,7 @@ import { UserRepository } from "@server/modules/user/user.repository.js";
 import { UserService } from "@server/modules/user/user.service.js";
 import { AuthError } from "@server/errors/AppError.js";
 import { Request, Response } from "express";
+import { getEnvOrThrow } from "@server/utils/getEnvOrThrow.js";
 
 export class AuthController {
   private readonly authService = new AuthService();
@@ -55,5 +56,14 @@ export class AuthController {
       message: "User logged in",
       accessToken: accessToken,
     });
+  };
+
+  // testing
+  verifyToken = async (req: Request, res: Response) => {
+    const { accessToken } = req.body;
+    if (accessToken) {
+      this.authService.verifyToken(accessToken, getEnvOrThrow("JWT_SECRET"));
+      res.status(200).json("Token is valid");
+    }
   };
 }
