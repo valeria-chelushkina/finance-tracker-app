@@ -79,33 +79,21 @@ export class AuthController {
     });
   };
 
-  // testing
-  verifyToken = async (req: Request, res: Response) => {
-    const { accessToken } = req.body;
-    console.log(accessToken);
-    if (accessToken) {
-      this.authService.verifyToken<UserPayload>(
-        accessToken,
-        getEnvOrThrow("JWT_SECRET"),
-      );
-      res.status(200).json("Token is valid");
-    }
-  };
-
   refreshToken = async (req: Request, res: Response) => {
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) {
-      throw new AuthError("Refresh token missing from cookies.", 401);
+      throw new AuthError("Refresh token missing from cookies.");
     }
 
-    const decodedToken = this.authService.verifyToken<UserPayload>(
+    // checks if RT is valid - will need to redirect to /login page
+    const decodedUser: UserPayload = this.authService.verifyToken(
       refreshToken,
       getEnvOrThrow("JWT_REFRESH_SECRET"),
     );
 
     const accessToken = this.authService.createAccessToken(
-      decodedToken.id,
-      decodedToken.email,
+      decodedUser.id,
+      decodedUser.email,
     );
 
     setCookie(res, "accessToken", accessToken, {

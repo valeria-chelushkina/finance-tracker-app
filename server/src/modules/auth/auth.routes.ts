@@ -7,6 +7,6 @@ const authController = new AuthController();
 
 authRouter.post('/login', authController.login)
 authRouter.post('/register', authController.signUp);
-authRouter.post('/verify', authController.verifyToken); // testing
+authRouter.post('/refresh', authController.refreshToken);
 
 export default authRouter;

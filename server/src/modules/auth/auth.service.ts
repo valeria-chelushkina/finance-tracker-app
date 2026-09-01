@@ -1,11 +1,12 @@
 import bcrypt from "bcrypt";
 import { getEnvOrThrow } from "@server/utils/getEnvOrThrow.js";
 import { AuthError } from "@server/errors/AppError.js";
+import { UserPayload } from "@server/types/authTypes.js";
 import jwt from "jsonwebtoken";
 
 export class AuthService {
   createAccessToken(userId: number, userEmail: string) {
-    const jwtSecret = getEnvOrThrow("JWT_SECRET");
+    const jwtSecret = getEnvOrThrow("JWT_ACCESS_SECRET");
     const payload = {
       userId: userId,
       userEmail: userEmail,
@@ -22,14 +23,14 @@ export class AuthService {
     return jwt.sign(payload, jwtRefreshSecret, { expiresIn: 7884000 }); // expires in 3 months
   }
 
-  verifyToken<T = jwt.JwtPayload> (token: any, secret: string): T {
+  verifyToken(token: any, secret: string): UserPayload {
     try {
-      const decoded = jwt.verify(token, secret) as T;
+      const decoded = jwt.verify(token, secret) as UserPayload;
       return decoded;
     } catch (error: unknown) {
       // remove cookies?? if token is not valid
       if (error instanceof jwt.TokenExpiredError) {
-        throw new AuthError("Token is expired.", 498);
+        throw new AuthError("Token is expired.");
       }
       if (error instanceof jwt.JsonWebTokenError) {
         throw new AuthError("Token is invalid.");
