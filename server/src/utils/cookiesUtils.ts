@@ -26,3 +26,25 @@ export const setCookie = (
     sameSite,
   });
 };
+
+export const clearCookie = (
+  res: Response,
+  name: string,
+  options?: {
+    secure?: boolean;
+    httpOnly?: boolean;
+    sameSite?: 'strict' | 'lax' | 'none';
+  },
+): void => {
+  const {
+    secure = getEnvOrThrow("NODE_ENV") === 'production',
+    httpOnly = true,
+    sameSite = 'lax',
+  } = options || {};
+
+  res.clearCookie(name, {
+    secure,
+    httpOnly,
+    sameSite,
+  });
+};

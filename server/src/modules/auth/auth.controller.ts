@@ -4,7 +4,7 @@ import { UserService } from "@server/modules/user/user.service.js";
 import { AuthError } from "@server/errors/AppError.js";
 import { Request, Response } from "express";
 import { getEnvOrThrow } from "@server/utils/getEnvOrThrow.js";
-import { setCookie } from "@server/utils/cookiesUtils.js";
+import { setCookie, clearCookie } from "@server/utils/cookiesUtils.js";
 import { UserPayload } from "@server/types/authTypes.js";
 
 export class AuthController {
@@ -82,24 +82,40 @@ export class AuthController {
   refreshToken = async (req: Request, res: Response) => {
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) {
+      clearCookie(res, "accessToken");
+      clearCookie(res, "refreshToken");
       throw new AuthError("Refresh token missing from cookies.");
     }
 
-    // checks if RT is valid - will need to redirect to /login page
-    const decodedUser: UserPayload = this.authService.verifyToken(
-      refreshToken,
-      getEnvOrThrow("JWT_REFRESH_SECRET"),
-    );
+    // can i use try...catch here......
+    try {
+      // checks if RT is valid - will need to redirect to /login page
+      const decodedUser: UserPayload = this.authService.verifyToken(
+        refreshToken,
+        getEnvOrThrow("JWT_REFRESH_SECRET"),
+      );
 
-    const accessToken = this.authService.createAccessToken(
-      decodedUser.id,
-      decodedUser.email,
-    );
+      const accessToken = this.authService.createAccessToken(
+        decodedUser.id,
+        decodedUser.email,
+      );
 
-    setCookie(res, "accessToken", accessToken, {
-      ageInSeconds: 600,
-    });
+      setCookie(res, "accessToken", accessToken, {
+        ageInSeconds: 600,
+      });
 
-    res.status(200).json("Access token has been refreshed.");
+      res.status(200).json("Access token has been refreshed.");
+    } catch (err) {
+      clearCookie(res, "accessToken");
+      clearCookie(res, "refreshToken");
+      res.redirect("/auth/login");
+    }
   };
+
+  logout = async(req: Request, res: Response) => {
+    clearCookie(res, "accessToken");
+    clearCookie(res, "refreshToken");
+
+    res.status(200).send("User logged out successfully.")
+  }
 }

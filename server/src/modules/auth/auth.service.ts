@@ -11,7 +11,7 @@ export class AuthService {
       userId: userId,
       userEmail: userEmail,
     };
-    return jwt.sign(payload, jwtSecret, { expiresIn: "10m" });
+    return jwt.sign(payload, jwtSecret, { expiresIn: "1m" });
   }
 
   createRefreshToken(userId: number, userEmail: string) {
@@ -20,7 +20,8 @@ export class AuthService {
       userId: userId,
       userEmail: userEmail,
     };
-    return jwt.sign(payload, jwtRefreshSecret, { expiresIn: 7884000 }); // expires in 3 months
+    //return jwt.sign(payload, jwtRefreshSecret, { expiresIn: 7884000 }); // expires in 3 months
+    return jwt.sign(payload, jwtRefreshSecret, { expiresIn: "2m" });
   }
 
   verifyToken(token: any, secret: string): UserPayload {
@@ -28,7 +29,6 @@ export class AuthService {
       const decoded = jwt.verify(token, secret) as UserPayload;
       return decoded;
     } catch (error: unknown) {
-      // remove cookies?? if token is not valid
       if (error instanceof jwt.TokenExpiredError) {
         throw new AuthError("Token is expired.");
       }
