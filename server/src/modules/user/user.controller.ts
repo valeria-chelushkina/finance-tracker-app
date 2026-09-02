@@ -1,38 +1,45 @@
 import { UserService } from "@server/modules/user/user.service.js";
 import { Request, Response } from "express";
 import type { User } from "@server/modules/user/user.module.js";
-import { stringToIntCheck } from "@server/utils/controllerUtils.js";
-import { clearCookie } from "@server/utils/cookiesUtils.js";
+import {
+  COOKIE_NAMES,
+  cookieAccessOptions,
+  cookieRefreshOptions,
+} from "@server/modules/auth/constants.js";
+import { getUserAuth } from "@server/middlewares/authMiddleware.js";
+import { UpdateUser } from "@server/modules/user/user.module.js";
 
-// auth is not implemented yet
 export class UserController {
   private readonly userService = new UserService();
 
   findUserById = async (req: Request, res: Response) => {
-    const idCheck = stringToIntCheck(req, "id");
+    const userId: number = getUserAuth(res).userId;
 
-    const user: User | null = await this.userService.findUserById(idCheck);
+    const user: User | null = await this.userService.findUserById(userId);
     res.status(200).json(user);
   };
 
-  updateUserById = async (req: Request, res: Response) => {
-    const userPayload = req.body || {};
-    const idCheck = stringToIntCheck(req, "id");
+  // will need to control that password can be reset only from /auth/resetPassword endpoint
+  updateUserById = async (
+    req: Request<unknown, unknown, UpdateUser>,
+    res: Response,
+  ) => {
+    const userPayload: UpdateUser = req.body || {};
+    const userId: number = getUserAuth(res).userId;
 
     const user: User | null = await this.userService.updateUser(
-      idCheck,
+      userId,
       userPayload,
     );
     res.status(200).json(user);
   };
 
   deleteUserById = async (req: Request, res: Response) => {
-    const idCheck = stringToIntCheck(req, "id");
+    const userId: number = getUserAuth(res).userId;
 
-    await this.userService.deleteUser(idCheck);
-    // clear cookies if user is getting deleted
-    clearCookie(res, "accessToken");
-    clearCookie(res, "refreshToken");
-    res.status(200).json(`User ${idCheck} had been deleted from the system.`);
+    await this.userService.deleteUser(userId);
+    res.clearCookie(COOKIE_NAMES.ACCESS_TOKEN, cookieAccessOptions);
+    res.clearCookie(COOKIE_NAMES.REFRESH_TOKEN, cookieRefreshOptions);
+    res.status(200).send(`User ${userId} had been deleted from the system.`);
   };
 }

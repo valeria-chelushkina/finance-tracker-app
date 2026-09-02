@@ -1,8 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 import { AuthService } from "@server/modules/auth/auth.service.js";
-import { AuthError } from "@server/errors/AppError.js";
+import { AuthError } from "@server/errors/AppErrors.js";
 import { UserPayload } from "@server/types/authTypes.js";
-import { clearCookie } from "@server/utils/cookiesUtils.js";
+import {
+  COOKIE_NAMES,
+  cookieAccessOptions,
+} from "@server/modules/auth/constants.js";
 import { getEnvOrThrow } from "@server/utils/getEnvOrThrow.js";
 import jwt from "jsonwebtoken";
 
@@ -21,14 +24,22 @@ export const authMiddleware = (
     const decodedUser: UserPayload = authService.verifyToken(
       accessToken,
       getEnvOrThrow("JWT_ACCESS_SECRET"),
-    ); // verifytoken catches errors, so if AT is invalid, expired etc => will throw 401 error
+    );
 
-    res.locals.user = decodedUser; // save user information, saved in token
+    res.locals.user = decodedUser;
     next();
   } catch (err: unknown) {
     if (err instanceof jwt.TokenExpiredError) {
-      clearCookie(res, "accessToken"); // clears accessToken cookies if token is expired
+      res.clearCookie(COOKIE_NAMES.ACCESS_TOKEN, cookieAccessOptions);
     }
     next(err);
   }
 };
+
+export function getUserAuth(res: Response): UserPayload {
+  const user: UserPayload | undefined = res.locals?.user;
+  if (!user) {
+    throw new AuthError("User is not authorized.");
+  }
+  return user;
+}

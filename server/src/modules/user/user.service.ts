@@ -3,15 +3,14 @@ import type {
   User,
   UpdateUser,
 } from "@server/modules/user/user.module.js";
-import { NotFoundError } from "@server/errors/AppError.js";
+import { NotFoundError, ValidationError } from "@server/errors/AppErrors.js";
 import { AuthService } from "@server/modules/auth/auth.service.js";
 
 export class UserService {
   private readonly userRepository = new UserRepository();
-  private readonly authService = new AuthService();
 
   async createUser(email: string, password: string): Promise<User | null> {
-    const hashedPassword: string = await this.authService.hashPassword(password);
+    const hashedPassword: string = await AuthService.hashPassword(password);
     const createdUser = await this.userRepository.createUser(
       email,
       hashedPassword,
@@ -35,6 +34,10 @@ export class UserService {
     id: number,
     payload: Partial<UpdateUser>,
   ): Promise<User | null> {
+    if(!payload)
+    {
+      throw new ValidationError("Payload is empty, nothing to update.");
+    }
     const updatedUser = await this.userRepository.updateUser(id, payload);
     if (!updatedUser) {
       throw new NotFoundError(

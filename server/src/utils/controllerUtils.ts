@@ -1,5 +1,5 @@
 import { Request } from "express";
-import { ValidationError } from "@server/errors/AppError.js";
+import { ValidationError } from "@server/errors/AppErrors.js";
 
 export function stringToIntCheck(req: Request, param: string) {
   const rawParam = req.params[param];
