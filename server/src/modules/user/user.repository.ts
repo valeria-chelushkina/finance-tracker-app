@@ -4,7 +4,7 @@ import type {
 } from "@server/modules/user/user.module.js";
 import { users } from "@server/modules/user/user.module.js";
 import { db, DbClient } from "@server/database/databaseClient.js";
-import { eq, getColumns } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 
 export class UserRepository {
   private readonly dbClient: DbClient;

@@ -2,6 +2,7 @@ import { UserService } from "@server/modules/user/user.service.js";
 import { Request, Response } from "express";
 import type { User } from "@server/modules/user/user.module.js";
 import { stringToIntCheck } from "@server/utils/controllerUtils.js";
+import { clearCookie } from "@server/utils/cookiesUtils.js";
 
 // auth is not implemented yet
 export class UserController {
@@ -29,6 +30,9 @@ export class UserController {
     const idCheck = stringToIntCheck(req, "id");
 
     await this.userService.deleteUser(idCheck);
+    // clear cookies if user is getting deleted
+    clearCookie(res, "accessToken");
+    clearCookie(res, "refreshToken");
     res.status(200).json(`User ${idCheck} had been deleted from the system.`);
   };
 }

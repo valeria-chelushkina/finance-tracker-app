@@ -1,30 +1,39 @@
 import { AuthService } from "@server/modules/auth/auth.service.js";
 import { UserRepository } from "@server/modules/user/user.repository.js";
 import { UserService } from "@server/modules/user/user.service.js";
-import { AuthError } from "@server/errors/AppError.js";
+import { AuthError, ValidationError } from "@server/errors/AppError.js";
 import { Request, Response } from "express";
 import { getEnvOrThrow } from "@server/utils/getEnvOrThrow.js";
 import { setCookie, clearCookie } from "@server/utils/cookiesUtils.js";
 import { UserPayload } from "@server/types/authTypes.js";
+import type { User } from "@server/modules/user/user.module.js";
 
 export class AuthController {
   private readonly authService = new AuthService();
   private readonly userRepository = new UserRepository();
   private readonly userService = new UserService();
 
-  // right now tokens are not stored in http-only cookies
-  signUp = async (req: Request, res: Response) => {
+  // (will be done)
+  // for login and register -> if user has active, valid tokens (AT or RT) and is already logged in - can't access, will be redirected to the main page
+  register = async (req: Request, res: Response) => {
     const { email, password } = req.body;
-    const existingUser = await this.userRepository.findUserByEmail(email);
+    const existingUser: User | null =
+      await this.userRepository.findUserByEmail(email);
     if (existingUser) {
       throw new AuthError(`User with email ${email} already exists.`);
     }
 
-    const newUser = await this.userService.createUser(email, password);
-    if (!newUser) throw new Error();
+    const newUser: User | null = await this.userService.createUser(
+      email,
+      password,
+    );
 
-    const accessToken = this.authService.createAccessToken(newUser.id, email);
-    const refreshToken = this.authService.createRefreshToken(newUser.id, email);
+    if (!newUser) {
+      throw new Error("Something went wrong when creating a new user.");
+    }
+
+    const accessToken: string = this.authService.createAccessToken(newUser.id, email);
+    const refreshToken: string = this.authService.createRefreshToken(newUser.id, email);
 
     setCookie(res, "accessToken", accessToken, {
       ageInSeconds: 600,
@@ -42,25 +51,25 @@ export class AuthController {
 
   login = async (req: Request, res: Response) => {
     const { email, password } = req.body;
-    const existingUser = await this.userRepository.findUserByEmail(email);
+    const existingUser: User | null = await this.userRepository.findUserByEmail(email);
     if (!existingUser) {
       throw new AuthError(`User with email ${email} doesn't exist.`);
     }
 
-    const passwordIsCorrect = await this.authService.verifyPassword(
+    const correctPassword: boolean = await this.authService.verifyPassword(
       password,
       existingUser.passwordHash,
     );
 
-    if (!passwordIsCorrect) {
+    if (!correctPassword) {
       throw new AuthError(`Password is incorrect!`);
     }
 
-    const accessToken = this.authService.createAccessToken(
+    const accessToken: string = this.authService.createAccessToken(
       existingUser.id,
       email,
     );
-    const refreshToken = this.authService.createRefreshToken(
+    const refreshToken: string = this.authService.createRefreshToken(
       existingUser.id,
       email,
     );
@@ -80,7 +89,7 @@ export class AuthController {
   };
 
   refreshToken = async (req: Request, res: Response) => {
-    const refreshToken = req.cookies.refreshToken;
+    const refreshToken: string = req.cookies.refreshToken;
     if (!refreshToken) {
       clearCookie(res, "accessToken");
       clearCookie(res, "refreshToken");
@@ -95,9 +104,9 @@ export class AuthController {
         getEnvOrThrow("JWT_REFRESH_SECRET"),
       );
 
-      const accessToken = this.authService.createAccessToken(
-        decodedUser.id,
-        decodedUser.email,
+      const accessToken: string = this.authService.createAccessToken(
+        decodedUser.userId,
+        decodedUser.userEmail,
       );
 
       setCookie(res, "accessToken", accessToken, {
@@ -112,10 +121,28 @@ export class AuthController {
     }
   };
 
-  logout = async(req: Request, res: Response) => {
+  logout = async (req: Request, res: Response) => {
     clearCookie(res, "accessToken");
     clearCookie(res, "refreshToken");
+    res.status(200).send("User logged out successfully.");
+  };
 
-    res.status(200).send("User logged out successfully.")
-  }
+  resetPassword = async (req: Request, res: Response) => {
+    const user: UserPayload | undefined = res.locals?.user;
+
+    if (!user) {
+      throw new AuthError("User is not authorized. No access.");
+    }
+
+    const oldPassword: string = req.body?.oldPassword;
+    const newPassword: string = req.body?.newPassword;
+    if (!oldPassword || !newPassword) {
+      throw new ValidationError(
+        "Couldn't find old or new passwords in the request body. Can't reset the password.",
+      );
+    }
+
+    this.authService.resetPassword(user.userId, oldPassword, newPassword);
+    res.status(200).send("Resetted password successfully.");
+  };
 }

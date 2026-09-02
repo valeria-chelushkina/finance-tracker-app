@@ -13,7 +13,7 @@ export const authMiddleware = (
   res: Response,
   next: NextFunction,
 ) => {
-  const accessToken = req.cookies.accessToken;
+  const accessToken: string = req.cookies.accessToken;
   if (!accessToken) {
     throw new AuthError("Access token is absent in request.");
   }
@@ -27,7 +27,7 @@ export const authMiddleware = (
     next();
   } catch (err: unknown) {
     if (err instanceof jwt.TokenExpiredError) {
-      clearCookie(res, "accessToken"); // clears accessToken cookies if error occurs
+      clearCookie(res, "accessToken"); // clears accessToken cookies if token is expired
     }
     next(err);
   }
