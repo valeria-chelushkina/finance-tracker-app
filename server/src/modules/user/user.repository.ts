@@ -1,7 +1,5 @@
-import type {
-  User,
-  UpdateUser,
-} from "@server/modules/user/user.module.js";
+import type { User, UpdateUser } from "@server/modules/user/user.module.js";
+import { UserInfo } from "@server/types/generalTypes.js";
 import { users } from "@server/modules/user/user.module.js";
 import { db, DbClient } from "@server/database/databaseClient.js";
 import { eq } from "drizzle-orm";
@@ -13,10 +11,11 @@ export class UserRepository {
     this.dbClient = dbClient;
   }
 
-  async createUser(email: string, password: string): Promise<User> {
+  async createUser(userInfo: UserInfo): Promise<User> {
+    const { userEmail, userPassword } = userInfo;
     const [createdUser] = await this.dbClient
       .insert(users)
-      .values({ email: email, passwordHash: password })
+      .values({ email: userEmail, passwordHash: userPassword })
       .returning();
     return createdUser;
   }
@@ -39,7 +38,6 @@ export class UserRepository {
     return user[0] || null;
   }
 
-  // cannot change password - will make a separate function
   async updateUser(
     id: number,
     updatedFields: Partial<UpdateUser>,

@@ -5,10 +5,10 @@ export interface UserPayload extends JwtPayload {
   userEmail: string;
 }
 
-export type UserInfo = {
-  userEmail: string;
-  userPassword: string;
-};
+export type PasswordHashPair = {
+  password: string,
+  passwordHash: string,
+}
 
 export type AuthTokens = {
   accessToken: string;
@@ -19,3 +19,8 @@ export type ResetPasswordBody = {
   oldPassword: string;
   newPassword: string;
 };
+
+export type JwtCredentials = {
+  token: string,
+  secret: string,
+}

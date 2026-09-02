@@ -1,7 +1,14 @@
 import bcrypt from "bcrypt";
 import { getEnvOrThrow } from "@server/utils/getEnvOrThrow.js";
 import { AuthError, ValidationError } from "@server/errors/AppErrors.js";
-import { UserPayload, AuthTokens, UserInfo } from "@server/types/authTypes.js";
+import {
+  UserPayload,
+  AuthTokens,
+  ResetPasswordBody,
+  PasswordHashPair,
+  JwtCredentials,
+} from "@server/types/authTypes.js";
+import { UserInfo } from "@server/types/generalTypes.js";
 import { UserRepository } from "@server/modules/user/user.repository.js";
 import { UserService } from "@server/modules/user/user.service.js";
 import type { User } from "@server/modules/user/user.module.js";
@@ -39,8 +46,9 @@ export class AuthService {
     });
   }
 
-  verifyToken(token: any, secret: string): UserPayload {
+  verifyToken(jwtCredentials: JwtCredentials): UserPayload {
     try {
+      const { token, secret } = jwtCredentials;
       const decoded = jwt.verify(token, secret) as UserPayload;
       return decoded;
     } catch (error: unknown) {
@@ -64,24 +72,29 @@ export class AuthService {
   }
 
   static async verifyPassword(
-    password: string,
-    passwordHash: string,
+    passwordHashed: PasswordHashPair,
   ): Promise<boolean> {
-    return await bcrypt.compare(password, passwordHash);
+    return await bcrypt.compare(
+      passwordHashed.password,
+      passwordHashed.passwordHash,
+    );
   }
 
   async resetPassword(
     userId: number,
-    oldPassword: string,
-    newPassword: string,
+    resetPasswordBody: ResetPasswordBody,
   ): Promise<void> {
-    console.log(oldPassword);
-    console.log(newPassword);
-    if (!oldPassword || !newPassword) {
+    if (
+      !resetPasswordBody ||
+      !resetPasswordBody.newPassword ||
+      !resetPasswordBody.oldPassword
+    ) {
       throw new ValidationError(
         "Passwords were not provided in request body. Can't reset password.",
       );
     }
+
+    const { oldPassword, newPassword } = resetPasswordBody;
 
     const user: User | null = await this.userRepository.findUserById(userId);
     if (!user) {
@@ -89,10 +102,10 @@ export class AuthService {
         "User is not found in database. Cannot reset the password.",
       );
     }
-    const correctPassword: boolean = await AuthService.verifyPassword(
-      oldPassword,
-      user.passwordHash,
-    );
+    const correctPassword: boolean = await AuthService.verifyPassword({
+      password: oldPassword,
+      passwordHash: user.passwordHash,
+    });
     if (!correctPassword) {
       throw new AuthError("Password is incorrect. Cannot reset the password.");
     }
@@ -120,8 +133,7 @@ export class AuthService {
     }
 
     const newUser: User | null | undefined = await this.userService?.createUser(
-      userEmail,
-      userPassword,
+      { userEmail, userPassword },
     );
 
     if (!newUser) {
@@ -154,10 +166,10 @@ export class AuthService {
 
     const userId: number = Number(existingUser.id);
 
-    const correctPassword: boolean = await AuthService.verifyPassword(
-      userPassword,
-      existingUser.passwordHash,
-    );
+    const correctPassword: boolean = await AuthService.verifyPassword({
+      password: userPassword,
+      passwordHash: existingUser.passwordHash,
+    });
 
     if (!correctPassword) {
       throw new AuthError(`Password is incorrect!`);
@@ -174,10 +186,10 @@ export class AuthService {
       throw new AuthError("Refresh token missing from cookies.");
     }
 
-    const decodedUser: UserPayload = this.verifyToken(
-      refreshToken,
-      getEnvOrThrow(JWT_SECRET_NAMES.REFRESH_TOKEN),
-    );
+    const decodedUser: UserPayload = this.verifyToken({
+      token: refreshToken,
+      secret: getEnvOrThrow(JWT_SECRET_NAMES.REFRESH_TOKEN),
+    });
 
     const { userId, userEmail } = decodedUser;
 

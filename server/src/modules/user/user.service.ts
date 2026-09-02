@@ -1,20 +1,19 @@
 import { UserRepository } from "@server/modules/user/user.repository.js";
-import type {
-  User,
-  UpdateUser,
-} from "@server/modules/user/user.module.js";
+import type { User, UpdateUser } from "@server/modules/user/user.module.js";
+import { UserInfo } from "@server/types/generalTypes.js";
 import { NotFoundError, ValidationError } from "@server/errors/AppErrors.js";
 import { AuthService } from "@server/modules/auth/auth.service.js";
 
 export class UserService {
   private readonly userRepository = new UserRepository();
 
-  async createUser(email: string, password: string): Promise<User | null> {
-    const hashedPassword: string = await AuthService.hashPassword(password);
-    const createdUser = await this.userRepository.createUser(
-      email,
-      hashedPassword,
-    );
+  async createUser(userInfo: UserInfo): Promise<User | null> {
+    const { userEmail, userPassword } = userInfo;
+    const hashedPassword: string = await AuthService.hashPassword(userPassword);
+    const createdUser = await this.userRepository.createUser({
+      userEmail,
+      userPassword: hashedPassword,
+    });
     return createdUser;
   }
 
@@ -34,8 +33,7 @@ export class UserService {
     id: number,
     payload: Partial<UpdateUser>,
   ): Promise<User | null> {
-    if(!payload)
-    {
+    if (!payload) {
       throw new ValidationError("Payload is empty, nothing to update.");
     }
     const updatedUser = await this.userRepository.updateUser(id, payload);

@@ -30,8 +30,6 @@ export const users = pgTable(
 
 export type User = typeof users.$inferSelect;
 
-// UpdateUser - type is used only when user updates their information.
-// can't change id, email or timestamps
 export type UpdateUser = Partial<Omit<
   typeof users.$inferInsert,
   "email" | "createdAt" | "updatedAt"

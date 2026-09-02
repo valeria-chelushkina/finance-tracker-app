@@ -1,10 +1,7 @@
 import { AuthService } from "@server/modules/auth/auth.service.js";
 import { Request, Response } from "express";
-import {
-  AuthTokens,
-  UserInfo,
-  ResetPasswordBody,
-} from "@server/types/authTypes.js";
+import { AuthTokens, ResetPasswordBody } from "@server/types/authTypes.js";
+import { UserInfo } from "@server/types/generalTypes.js";
 import {
   COOKIE_NAMES,
   cookieAccessOptions,
@@ -100,7 +97,7 @@ export class AuthController {
 
     const { oldPassword, newPassword } = req.body;
 
-    await this.authService.resetPassword(userId, oldPassword, newPassword);
+    await this.authService.resetPassword(userId, { oldPassword, newPassword });
     res.status(200).json({ message: "Resetted password successfully." });
   };
 }

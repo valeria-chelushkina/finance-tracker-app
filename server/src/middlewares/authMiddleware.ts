@@ -3,6 +3,7 @@ import { AuthService } from "@server/modules/auth/auth.service.js";
 import { AuthError } from "@server/errors/AppErrors.js";
 import { UserPayload } from "@server/types/authTypes.js";
 import {
+  JWT_SECRET_NAMES,
   COOKIE_NAMES,
   cookieAccessOptions,
 } from "@server/modules/auth/constants.js";
@@ -21,10 +22,10 @@ export const authMiddleware = (
     throw new AuthError("Access token is absent in request.");
   }
   try {
-    const decodedUser: UserPayload = authService.verifyToken(
-      accessToken,
-      getEnvOrThrow("JWT_ACCESS_SECRET"),
-    );
+    const decodedUser: UserPayload = authService.verifyToken({
+      token: accessToken,
+      secret: getEnvOrThrow(JWT_SECRET_NAMES.ACCESS_TOKEN),
+    });
 
     res.locals.user = decodedUser;
     next();

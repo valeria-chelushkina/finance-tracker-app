@@ -40,6 +40,8 @@ export class UserController {
     await this.userService.deleteUser(userId);
     res.clearCookie(COOKIE_NAMES.ACCESS_TOKEN, cookieAccessOptions);
     res.clearCookie(COOKIE_NAMES.REFRESH_TOKEN, cookieRefreshOptions);
-    res.status(200).send(`User ${userId} had been deleted from the system.`);
+    res
+      .status(200)
+      .json({ message: `User ${userId} had been deleted from the system.` });
   };
 }
