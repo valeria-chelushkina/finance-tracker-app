@@ -1,20 +1,16 @@
 import { AuthService } from "@server/modules/auth/auth.service.js";
 import { Request, Response } from "express";
-import { AuthTokens, ResetPasswordBody } from "@server/types/authTypes.js";
-import { UserInfo } from "@server/types/generalTypes.js";
+import type { AuthTokens, ResetPasswordBody } from "@server/modules/auth/typedefs.js";
+import type { UserInfo } from "@server/types/generalTypes.js";
 import {
   COOKIE_NAMES,
   cookieAccessOptions,
   cookieRefreshOptions,
 } from "@server/modules/auth/constants.js";
-import { UserService } from "@server/modules/user/user.service.js";
-import { getUserAuth } from "@server/middlewares/authMiddleware.js";
 
 export class AuthController {
-  private readonly authService = new AuthService(new UserService());
+  private readonly authService = new AuthService();
 
-  // (will be done)
-  // for login and register -> if user has active, valid tokens (AT or RT) and is already logged in - can't access, will be redirected to the main page
   register = async (
     req: Request<unknown, unknown, UserInfo>,
     res: Response,
@@ -67,7 +63,7 @@ export class AuthController {
   };
 
   refreshToken = async (req: Request, res: Response) => {
-    const refreshToken: string = req.cookies.refreshToken;
+    const refreshToken: string = req.cookies[COOKIE_NAMES.REFRESH_TOKEN];
 
     if (!refreshToken) {
       res.clearCookie(COOKIE_NAMES.ACCESS_TOKEN, cookieAccessOptions);
@@ -93,11 +89,11 @@ export class AuthController {
     req: Request<unknown, unknown, ResetPasswordBody>,
     res: Response,
   ) => {
-    const userId: number = getUserAuth(res).userId;
+    const userId: number = req.user!.userId;
 
     const { oldPassword, newPassword } = req.body;
 
     await this.authService.resetPassword(userId, { oldPassword, newPassword });
-    res.status(200).json({ message: "Resetted password successfully." });
+    res.status(200).json({ message: "Reset password successfully." });
   };
 }

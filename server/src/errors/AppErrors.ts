@@ -26,3 +26,9 @@ export class AuthError extends AppError {
     super(message, 401);
   }
 }
+
+export class ConflictError extends AppError {
+  constructor(message = "There has been a conflict.") {
+    super(message, 409);
+  }
+}

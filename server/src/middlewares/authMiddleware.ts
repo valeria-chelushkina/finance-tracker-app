@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { AuthService } from "@server/modules/auth/auth.service.js";
 import { AuthError } from "@server/errors/AppErrors.js";
-import { UserPayload } from "@server/types/authTypes.js";
+import type { UserPayload } from "@server/types/generalTypes.js";
 import {
   JWT_SECRET_NAMES,
   COOKIE_NAMES,
@@ -17,7 +17,7 @@ export const authMiddleware = (
   res: Response,
   next: NextFunction,
 ) => {
-  const accessToken: string = req.cookies.accessToken;
+  const accessToken: string = req.cookies[COOKIE_NAMES.ACCESS_TOKEN];
   if (!accessToken) {
     throw new AuthError("Access token is absent in request.");
   }
@@ -27,7 +27,8 @@ export const authMiddleware = (
       secret: getEnvOrThrow(JWT_SECRET_NAMES.ACCESS_TOKEN),
     });
 
-    res.locals.user = decodedUser;
+    req.user! = decodedUser;
+
     next();
   } catch (err: unknown) {
     if (err instanceof jwt.TokenExpiredError) {
@@ -36,11 +37,3 @@ export const authMiddleware = (
     next(err);
   }
 };
-
-export function getUserAuth(res: Response): UserPayload {
-  const user: UserPayload | undefined = res.locals?.user;
-  if (!user) {
-    throw new AuthError("User is not authorized.");
-  }
-  return user;
-}

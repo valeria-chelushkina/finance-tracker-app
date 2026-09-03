@@ -1,49 +1,69 @@
 import bcrypt from "bcrypt";
 import { getEnvOrThrow } from "@server/utils/getEnvOrThrow.js";
-import { AuthError, ValidationError } from "@server/errors/AppErrors.js";
 import {
-  UserPayload,
+  AuthError,
+  ConflictError,
+} from "@server/errors/AppErrors.js";
+import type {
   AuthTokens,
   ResetPasswordBody,
-  PasswordHashPair,
-  JwtCredentials,
-} from "@server/types/authTypes.js";
-import { UserInfo } from "@server/types/generalTypes.js";
+} from "@server/modules/auth/typedefs.js";
+import type { UserPayload, UserInfo } from "@server/types/generalTypes.js";
 import { UserRepository } from "@server/modules/user/user.repository.js";
-import { UserService } from "@server/modules/user/user.service.js";
 import type { User } from "@server/modules/user/user.module.js";
 import jwt from "jsonwebtoken";
 import {
   TOKEN_AGES,
   JWT_SECRET_NAMES,
 } from "@server/modules/auth/constants.js";
+import type { SignOptions } from "jsonwebtoken";
+
+export type PasswordHashPair = {
+  password: string;
+  passwordHash: string;
+};
+
+export type JwtCredentials = {
+  token: string;
+  secret: string;
+};
 
 export class AuthService {
   private readonly userRepository = new UserRepository();
-  constructor(private readonly userService?: UserService) {}
 
-  createAccessToken(userPayload: UserPayload): string {
-    const jwtSecret: string = getEnvOrThrow(JWT_SECRET_NAMES.ACCESS_TOKEN);
+  private generateToken(
+    tokenSecretName: string,
+    userPayload: UserPayload,
+    tokenOptions: SignOptions,
+  ): string {
+    const jwtSecret: string = tokenSecretName;
     const payload: UserPayload = {
       userId: userPayload.userId,
       userEmail: userPayload.userEmail,
     };
-    return jwt.sign(payload, jwtSecret, {
+    return jwt.sign(payload, jwtSecret, tokenOptions);
+  }
+
+  createAccessToken(userPayload: UserPayload): string {
+    const accessTokenOptions: SignOptions = {
       expiresIn: TOKEN_AGES.ACCESS_TOKEN_AGE,
-    });
+    };
+    return this.generateToken(
+      getEnvOrThrow(JWT_SECRET_NAMES.ACCESS_TOKEN),
+      userPayload,
+      accessTokenOptions,
+    );
   }
 
   createRefreshToken(userPayload: UserPayload): string {
-    const jwtRefreshSecret: string = getEnvOrThrow(
-      JWT_SECRET_NAMES.REFRESH_TOKEN,
-    );
-    const payload: UserPayload = {
-      userId: userPayload.userId,
-      userEmail: userPayload.userEmail,
-    };
-    return jwt.sign(payload, jwtRefreshSecret, {
+    const refreshTokenOptions: SignOptions = {
       expiresIn: TOKEN_AGES.REFRESH_TOKEN_AGE,
-    });
+    };
+    return this.generateToken(
+      getEnvOrThrow(JWT_SECRET_NAMES.REFRESH_TOKEN),
+      userPayload,
+      refreshTokenOptions,
+    );
   }
 
   verifyToken(jwtCredentials: JwtCredentials): UserPayload {
@@ -65,15 +85,13 @@ export class AuthService {
     }
   }
 
-  static async hashPassword(password: string): Promise<string> {
+  async hashPassword(password: string): Promise<string> {
     const saltRounds: number = 10;
     const hashed: string = await bcrypt.hash(password, saltRounds);
     return hashed;
   }
 
-  static async verifyPassword(
-    passwordHashed: PasswordHashPair,
-  ): Promise<boolean> {
+  async verifyPassword(passwordHashed: PasswordHashPair): Promise<boolean> {
     return await bcrypt.compare(
       passwordHashed.password,
       passwordHashed.passwordHash,
@@ -84,16 +102,6 @@ export class AuthService {
     userId: number,
     resetPasswordBody: ResetPasswordBody,
   ): Promise<void> {
-    if (
-      !resetPasswordBody ||
-      !resetPasswordBody.newPassword ||
-      !resetPasswordBody.oldPassword
-    ) {
-      throw new ValidationError(
-        "Passwords were not provided in request body. Can't reset password.",
-      );
-    }
-
     const { oldPassword, newPassword } = resetPasswordBody;
 
     const user: User | null = await this.userRepository.findUserById(userId);
@@ -102,15 +110,14 @@ export class AuthService {
         "User is not found in database. Cannot reset the password.",
       );
     }
-    const correctPassword: boolean = await AuthService.verifyPassword({
+    const isPasswordCorrect: boolean = await this.verifyPassword({
       password: oldPassword,
       passwordHash: user.passwordHash,
     });
-    if (!correctPassword) {
+    if (!isPasswordCorrect) {
       throw new AuthError("Password is incorrect. Cannot reset the password.");
     }
-    const newPasswordHashed: string =
-      await AuthService.hashPassword(newPassword);
+    const newPasswordHashed: string = await this.hashPassword(newPassword);
     await this.userRepository.updateUser(userId, {
       passwordHash: newPasswordHashed,
     });
@@ -119,22 +126,19 @@ export class AuthService {
   async registerUser(userInfo: UserInfo): Promise<AuthTokens> {
     const { userEmail, userPassword } = userInfo;
 
-    if (!userEmail || !userPassword) {
-      throw new ValidationError(
-        "Email or password were not provided in request body. Can't register.",
-      );
-    }
-
     const existingUser: User | null =
       await this.userRepository.findUserByEmail(userEmail);
 
     if (existingUser) {
-      throw new AuthError(`User with email ${userEmail} already exists.`);
+      throw new ConflictError(`User with email ${userEmail} already exists.`);
     }
 
-    const newUser: User | null | undefined = await this.userService?.createUser(
-      { userEmail, userPassword },
-    );
+    const hashedPassword = await this.hashPassword(userPassword);
+
+    const newUser: User | null = await this.userRepository.createUser({
+      userEmail,
+      userPassword: hashedPassword,
+    });
 
     if (!newUser) {
       throw new Error("Something went wrong when creating a new user.");
@@ -151,12 +155,6 @@ export class AuthService {
   async loginUser(userInfo: UserInfo): Promise<AuthTokens> {
     const { userEmail, userPassword } = userInfo;
 
-    if (!userEmail || !userPassword) {
-      throw new ValidationError(
-        "Email or password were not provided in request body. Can't login.",
-      );
-    }
-
     const existingUser: User | null =
       await this.userRepository.findUserByEmail(userEmail);
 
@@ -166,12 +164,12 @@ export class AuthService {
 
     const userId: number = Number(existingUser.id);
 
-    const correctPassword: boolean = await AuthService.verifyPassword({
+    const isPasswordCorrect: boolean = await this.verifyPassword({
       password: userPassword,
       passwordHash: existingUser.passwordHash,
     });
 
-    if (!correctPassword) {
+    if (!isPasswordCorrect) {
       throw new AuthError(`Password is incorrect!`);
     }
 

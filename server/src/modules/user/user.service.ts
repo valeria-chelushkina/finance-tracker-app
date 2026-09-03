@@ -1,21 +1,9 @@
 import { UserRepository } from "@server/modules/user/user.repository.js";
 import type { User, UpdateUser } from "@server/modules/user/user.module.js";
-import { UserInfo } from "@server/types/generalTypes.js";
 import { NotFoundError, ValidationError } from "@server/errors/AppErrors.js";
-import { AuthService } from "@server/modules/auth/auth.service.js";
 
 export class UserService {
   private readonly userRepository = new UserRepository();
-
-  async createUser(userInfo: UserInfo): Promise<User | null> {
-    const { userEmail, userPassword } = userInfo;
-    const hashedPassword: string = await AuthService.hashPassword(userPassword);
-    const createdUser = await this.userRepository.createUser({
-      userEmail,
-      userPassword: hashedPassword,
-    });
-    return createdUser;
-  }
 
   async findUserById(id: number): Promise<User | null> {
     const user = await this.userRepository.findUserById(id);
