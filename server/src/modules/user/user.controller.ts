@@ -1,34 +1,45 @@
 import { UserService } from "@server/modules/user/user.service.js";
 import { Request, Response } from "express";
-import type { SafeUser } from "@server/modules/user/user.module.js";
-import { stringToIntCheck } from "@server/utils/controllerUtils.js";
+import type { User, UpdateUser } from "@server/modules/user/user.module.js";
+import {
+  COOKIE_NAMES,
+  cookieAccessOptions,
+  cookieRefreshOptions,
+} from "@server/modules/auth/constants.js";
 
-// auth is not implemented yet
 export class UserController {
   private readonly userService = new UserService();
 
   findUserById = async (req: Request, res: Response) => {
-    const idCheck = stringToIntCheck(req, "id");
+    const userId: number = req.user!.userId;
 
-    const user: SafeUser | null = await this.userService.findUserById(idCheck);
+    const user: User | null = await this.userService.findUserById(userId);
     res.status(200).json(user);
   };
 
-  updateUserById = async (req: Request, res: Response) => {
-    const userPayload = req.body || {};
-    const idCheck = stringToIntCheck(req, "id");
+  // will need to control that password can be reset only from /auth/resetPassword endpoint
+  updateUserById = async (
+    req: Request<unknown, unknown, UpdateUser>,
+    res: Response,
+  ) => {
+    const userPayload: UpdateUser = req.body || {};
+    const userId: number = req.user!.userId;
 
-    const user: SafeUser | null = await this.userService.updateUser(
-      idCheck,
+    const user: User | null = await this.userService.updateUser(
+      userId,
       userPayload,
     );
     res.status(200).json(user);
   };
 
   deleteUserById = async (req: Request, res: Response) => {
-    const idCheck = stringToIntCheck(req, "id");
+    const userId: number = req.user!.userId;
 
-    await this.userService.deleteUser(idCheck);
-    res.status(200).json(`User ${idCheck} had been deleted from the system.`);
+    await this.userService.deleteUser(userId);
+    res.clearCookie(COOKIE_NAMES.ACCESS_TOKEN, cookieAccessOptions);
+    res.clearCookie(COOKIE_NAMES.REFRESH_TOKEN, cookieRefreshOptions);
+    res
+      .status(200)
+      .json({ message: `User ${userId} had been deleted from the system.` });
   };
 }

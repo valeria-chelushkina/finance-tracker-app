@@ -29,11 +29,8 @@ export const users = pgTable(
 );
 
 export type User = typeof users.$inferSelect;
-export type SafeUser = Omit<User, "passwordHash">; // to not expose password hash
 
-// UpdateUser - type is used only when user updates their information.
-// can't change id, password (will have different func for it), or timestamps
-export type UpdateUser = Omit<
+export type UpdateUser = Partial<Omit<
   typeof users.$inferInsert,
-  "passwordHash" | "createdAt" | "updatedAt"
->;
+  "email" | "createdAt" | "updatedAt"
+>>;
