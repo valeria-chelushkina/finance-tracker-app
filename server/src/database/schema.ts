@@ -164,7 +164,7 @@ export const jarsTable = pgTable(
     jarId: varchar("jar_id").notNull().unique(),
     sendId: varchar("send_id").notNull().unique(),
     title: varchar({ length: 255 }),
-    description: varchar("length: 255"),
+    description: varchar({ length: 255 }),
     currencyCode: isoCurrencyColumn(),
     balance: doublePrecision(),
     goal: doublePrecision(),

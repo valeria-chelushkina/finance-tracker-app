@@ -1,7 +1,7 @@
 import { getEnvOrThrow } from "@server/utils/getEnvOrThrow.js";
 
-const DABATASE_NAME = getEnvOrThrow("DABATASE_NAME");
-const DABATASE_USER = getEnvOrThrow("DABATASE_USER");
-const DABATASE_PASSWORD = getEnvOrThrow("DABATASE_PASSWORD");
-const DABATASE_PORT = getEnvOrThrow("DABATASE_PORT");
-export const DATABASE_URL = `postgresql://${DABATASE_USER}:${DABATASE_PASSWORD}@localhost:${DABATASE_PORT}/${DABATASE_NAME}`;
+const DATABASE_NAME = getEnvOrThrow("DATABASE_NAME");
+const DATABASE_USER = getEnvOrThrow("DATABASE_USER");
+const DATABASE_PASSWORD = getEnvOrThrow("DATABASE_PASSWORD");
+const DATABASE_PORT = getEnvOrThrow("DATABASE_PORT");
+export const DATABASE_URL = `postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@localhost:${DATABASE_PORT}/${DATABASE_NAME}`;
