@@ -1,11 +1,11 @@
 import { defineConfig } from "drizzle-kit";
-import { getEnvOrThrow } from "./src/utils/getEnvOrThrow.js";
+import { DATABASE_URL } from "./src/database/db.consts";
 
 export default defineConfig({
   out: "./drizzle",
   schema: ["./src/database/schema.ts", "./src/modules/user/user.module.ts"],
   dialect: "postgresql",
   dbCredentials: {
-    url: getEnvOrThrow("DATABASE_URL"),
+    url: DATABASE_URL,
   },
 });

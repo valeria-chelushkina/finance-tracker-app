@@ -1,7 +1,7 @@
 import { drizzle } from "drizzle-orm/node-postgres";
-import { getEnvOrThrow } from "@server/utils/getEnvOrThrow.js";
+import { DATABASE_URL } from "@server/database/db.consts.js";
 
-const dbUrl = getEnvOrThrow("DATABASE_URL");
+const dbUrl = DATABASE_URL;
 
 export const db = drizzle(dbUrl);
 export type DbClient = typeof db;
