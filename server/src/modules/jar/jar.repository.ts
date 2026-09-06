@@ -36,13 +36,13 @@ export class JarRepository {
     return jar[0] || null;
   }
 
-  async findJarsByUserId(id: number): Promise<Jar | null> {
+  async findJarsByUserId(id: number): Promise<Jar[]> {
     const userJars = await this.dbClient
       .select()
       .from(jars)
-      .where(eq(jars.userId, id))
-      .limit(1);
-    return userJars[0] || null;
+      .where(eq(jars.userId, id));
+
+    return userJars;
   }
 
   async updateJar(

@@ -13,7 +13,7 @@ export class AccountRepository {
     this.dbClient = dbClient;
   }
 
-  async createAccount(payload: Omit<Account, 'id'>): Promise<Account> {
+  async createAccount(payload: Omit<Account, "id">): Promise<Account> {
     const [newAccount] = await this.dbClient
       .insert(accounts)
       .values(payload)
@@ -39,13 +39,12 @@ export class AccountRepository {
     return account[0] || null;
   }
 
-  async findAccountByUserId(id: number): Promise<Account | null> {
-    const account = await this.dbClient
+  async findAccountsByUserId(id: number): Promise<Account[]> {
+    const userAccounts = await this.dbClient
       .select()
       .from(accounts)
-      .where(eq(accounts.userId, id))
-      .limit(1);
-    return account[0] || null;
+      .where(eq(accounts.userId, id));
+    return userAccounts;
   }
 
   async updateAccount(

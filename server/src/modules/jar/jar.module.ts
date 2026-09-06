@@ -29,7 +29,4 @@ export const jars = pgTable(
 );
 
 export type Jar = typeof jars.$inferSelect;
-export type UpdateJar = Partial<Omit<
-  typeof jars.$inferInsert,
-  "userId"
->>;
+export type UpdateJar = Partial<Omit<typeof jars.$inferInsert, "userId">>;

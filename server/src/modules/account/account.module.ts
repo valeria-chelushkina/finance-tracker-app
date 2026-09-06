@@ -42,7 +42,7 @@ export const accounts = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     bankName: banksEnum().default(BankProviders.Monobank).notNull(),
-    cardId: varchar("card_id", { length: 255 }).unique(),
+    cardId: varchar("card_id", { length: 255 }).unique().notNull(),
     sendId: varchar("send_id", { length: 255 }).unique(),
     currencyCode: isoCurrencyColumn(),
     cashbackType: cashbackTypesEnum(),
@@ -65,7 +65,6 @@ export const accounts = pgTable(
 );
 
 export type Account = typeof accounts.$inferSelect;
-export type UpdateAccount = Partial<Omit<
-  typeof accounts.$inferInsert,
-  "userId"
->>;
+export type UpdateAccount = Partial<
+  Omit<typeof accounts.$inferInsert, "userId">
+>;

@@ -5,8 +5,8 @@ import { NotFoundError, ValidationError } from "@server/errors/AppErrors.js";
 export class UserService {
   private readonly userRepository = new UserRepository();
 
-  async findUserById(id: number): Promise<User | null> {
-    const user = await this.userRepository.findUserById(id);
+  async findUserById(id: number): Promise<User> {
+    const user: User | null = await this.userRepository.findUserById(id);
 
     if (!user) {
       throw new NotFoundError(
@@ -17,14 +17,14 @@ export class UserService {
     return user;
   }
 
-  async updateUser(
-    id: number,
-    payload: Partial<UpdateUser>,
-  ): Promise<User | null> {
+  async updateUser(id: number, payload: Partial<UpdateUser>): Promise<User> {
     if (!payload) {
       throw new ValidationError("Payload is empty, nothing to update.");
     }
-    const updatedUser = await this.userRepository.updateUser(id, payload);
+    const updatedUser: User | null = await this.userRepository.updateUser(
+      id,
+      payload,
+    );
     if (!updatedUser) {
       throw new NotFoundError(
         "No user with such ID was found in database! Can't update non-existing user.",
@@ -34,7 +34,7 @@ export class UserService {
   }
 
   async deleteUser(id: number): Promise<boolean> {
-    const deletedUser = await this.userRepository.deleteUser(id);
+    const deletedUser: boolean = await this.userRepository.deleteUser(id);
     if (!deletedUser) {
       throw new NotFoundError(
         "No user with such ID was found in database! Can't delete non-existing user.",

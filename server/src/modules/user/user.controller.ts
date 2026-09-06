@@ -13,7 +13,7 @@ export class UserController {
   findUserById = async (req: Request, res: Response) => {
     const userId: number = req.user!.userId;
 
-    const user: User | null = await this.userService.findUserById(userId);
+    const user: User = await this.userService.findUserById(userId);
     res.status(200).json(user);
   };
 
@@ -25,10 +25,7 @@ export class UserController {
     const userPayload: UpdateUser = req.body || {};
     const userId: number = req.user!.userId;
 
-    const user: User | null = await this.userService.updateUser(
-      userId,
-      userPayload,
-    );
+    const user: User = await this.userService.updateUser(userId, userPayload);
     res.status(200).json(user);
   };
 
