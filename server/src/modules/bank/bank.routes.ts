@@ -6,3 +6,4 @@ export const bankRouter = Router();
 const bankController = new BankController();
 
 bankRouter.get("/connect", authMiddleware, bankController.connectMonobank);
+bankRouter.get("/statement", authMiddleware, bankController.getStatement);

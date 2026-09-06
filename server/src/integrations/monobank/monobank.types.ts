@@ -39,6 +39,7 @@ export type MonobankTransaction = {
   time: number;
   description: string;
   mcc: number;
+  originalMcc: number,
   amount: number;
   operationAmount: number;
   currencyCode: number;

@@ -15,7 +15,11 @@ import {
   encryptToken,
   decryptToken,
 } from "@server/utils/encryptDecryptToken.js";
-import { AuthError, ValidationError } from "@server/errors/AppErrors.js";
+import {
+  AuthError,
+  ValidationError,
+  ConflictError,
+} from "@server/errors/AppErrors.js";
 import type {
   MonobankStatementParameters,
   MonobankTransaction,
@@ -47,8 +51,10 @@ export class BankService {
 
     // validation, considering api request limitations
     if (
-      (params.to && (params.to > String(timeNow) || params.to < params.from)) ||
-      params.from < String(lastTimestamp)
+      (params.to &&
+        (Number(params.to) > timeNow ||
+          Number(params.to) < Number(params.from))) ||
+      Number(params.from) < lastTimestamp
     ) {
       throw new ValidationError("Invalid parameters input.");
     }
@@ -83,7 +89,13 @@ export class BankService {
           cardId: account.id,
           balance: account.balance / 100,
         };
-        await this.accountService.createAccount(accountWithId);
+        try {
+          await this.accountService.createAccount(accountWithId);
+        } catch (err: unknown) {
+          if (err instanceof ConflictError)
+            continue; // let program continue creating next accounts even if this one already exists else
+          else throw err;
+        }
       }
     }
 
@@ -95,8 +107,15 @@ export class BankService {
           userId: userId,
           jarId: jar.id,
           balance: jar.balance / 100,
+          goal: jar.goal / 100,
         };
-        await this.jarService.createJar(jarWithId);
+
+        try {
+          await this.jarService.createJar(jarWithId);
+        } catch (err: unknown) {
+          if (err instanceof ConflictError) continue;
+          else throw err;
+        }
       }
     }
 
@@ -117,9 +136,14 @@ export class BankService {
       await this.monobankClient.getStatement(userToken, params);
 
     if (transactions.length > 0) {
+      let count = 0;
       for (const transaction of transactions) {
+        count++;
         const transactionCategoryId: number = (
-          await this.categoryService.findcategoryByMcc(transaction.mcc)
+          await this.categoryService.findcategoryByMcc(
+            transaction.mcc,
+            transaction.originalMcc,
+          )
         ).id;
 
         const accountId: number = (
@@ -138,10 +162,20 @@ export class BankService {
           transactionId: transaction.id,
           transactionTime: transactionTime,
           balance: transaction.balance / 100,
+          amount: transaction.amount / 100,
+          operationAmount: transaction.operationAmount / 100,
+          commissionRate: transaction.commissionRate / 100,
+          cashbackAmount: transaction.cashbackAmount / 100,
         };
-
-        await this.transactionService.createTransaction(fullTransaction);
+        try {
+          await this.transactionService.createTransaction(fullTransaction);
+        } catch (error: unknown) {
+          if (error instanceof ConflictError) continue;
+          else throw error;
+        }
       }
     }
+
+    return transactions;
   }
 }

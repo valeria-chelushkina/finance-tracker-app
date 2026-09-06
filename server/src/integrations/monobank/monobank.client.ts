@@ -61,7 +61,7 @@ export class MonobankClient {
     userToken: string,
     params: MonobankStatementParameters,
   ): Promise<MonobankTransaction[]> {
-    const requestUrl = `${this.baseURL}//statement/${params.account}/${params.from}/${params.to}`;
+    const requestUrl = `${this.baseURL}/statement/${params.account}/${params.from}/${params.to ? params.to : ''}`;
 
     const data: MonobankTransaction[] = await this.getApiResponse(
       userToken,

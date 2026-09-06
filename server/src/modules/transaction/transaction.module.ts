@@ -16,7 +16,7 @@ import { categories } from "@server/modules/category/category.module.js";
 import { PaymentTypes } from "@server/types/dbEnums.js";
 
 export const paymentTypesEnum = pgEnum(
-  "paument_type",
+  "payment_type",
   Object.values(PaymentTypes) as [string, ...string[]],
 );
 

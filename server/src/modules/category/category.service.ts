@@ -37,17 +37,23 @@ export class CategoryService {
     return category;
   }
 
-  async findcategoryByMcc(mcc: number): Promise<Category> {
-    const category: Category | null =
+  async findcategoryByMcc(mcc: number, originalMcc: number): Promise<Category> {
+    const categoryMcc: Category | null =
       await this.categoryRepository.findCategoryByMcc(mcc);
+    const categoryOriginalMcc: Category | null =
+      await this.categoryRepository.findCategoryByMcc(originalMcc);
 
-    if (!category) {
+      
+
+    if (!categoryMcc && !categoryOriginalMcc) {
       throw new NotFoundError(
         "No category with such mcc was found in database!",
       );
     }
 
-    return category;
+    const returnCategory: Category = categoryMcc ? categoryMcc! : categoryOriginalMcc!;
+
+    return returnCategory;
   }
 
   async findCategoriesByUserId(id: number): Promise<Category[]> {
