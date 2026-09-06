@@ -18,7 +18,6 @@ import {
   unique,
 } from "drizzle-orm/pg-core";
 import { users } from "@server/modules/user/user.module.js";
-import { accounts } from "@server/modules/account/account.module.js";
 import { PaymentTypes, PaymentFrequencyTypes } from "@server/types/dbEnums.js";
 
 export const paymentTypesEnum = pgEnum(
@@ -31,34 +30,6 @@ export const paymentTypesEnum = pgEnum(
 export const frequencyTypesEnum = pgEnum(
   "frequency_type",
   Object.values(PaymentFrequencyTypes) as [string, ...string[]],
-);
-
-// only successful transactions - if transaction didn't go through, it will not be saved
-// transactions made with cash would also be saved here (user will enter manualy)
-export const transactionsTable = pgTable(
-  "transactions",
-  {
-    id: integer().primaryKey().generatedAlwaysAsIdentity(),
-    userId: integer("user_id")
-      .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
-    paymentType: paymentTypesEnum().default(PaymentTypes.Card),
-    accountId: integer("account_id").references(() => accounts.id, {
-      onDelete: "cascade",
-    }),
-    transactionId: varchar("transaction_id", { length: 255 }).unique(),
-    transactionTime: timestamp("transaction_time"),
-    description: varchar({ length: 255 }),
-    category: integer().references(() => categoriesTable.id, {
-      onDelete: "cascade",
-    }),
-    amount: doublePrecision().notNull(),
-    currencyCode: isoCurrencyColumn(),
-    commissionRate: doublePrecision("commission_rate"),
-    cashbackAmout: doublePrecision("cashback_amount"),
-    comment: varchar({ length: 255 }),
-  },
-  () => [isoCurrencyCheck("transactions")],
 );
 
 export const recurringTransactionsTable = pgTable(
@@ -144,31 +115,6 @@ export const statisticsTable = pgTable(
     isoCurrencyCheck("statistics"),
     check("month_statistics_check", sql`${t.month} BETWEEN 1 AND 12`),
   ],
-);
-
-export const categoriesTable = pgTable(
-  "categories",
-  {
-    id: integer().primaryKey().generatedAlwaysAsIdentity(),
-    userId: integer("user_id").references(() => users.id, {
-      onDelete: "cascade",
-    }),
-    name: varchar({ length: 255 }).notNull(),
-    color: varchar({ length: 7 }),
-    icon: varchar({ length: 255 }),
-    isComposite: boolean("is_composite").default(false).notNull(),
-    mccCodes: integer("mcc_codes")
-      .array()
-      .default(sql`ARRAY[]::integer[]`),
-    includedCategories: integer("included_categories")
-      .array()
-      .default(sql`ARRAY[]::integer[]`),
-    shortDescriptionEn: varchar("short_description_en", { length: 255 }),
-    shortDescriptionUa: varchar("short_description_ua", { length: 255 }),
-    fullDescriptionEn: text("full_description_en"),
-    fullDescriptionUa: text("full_description_ua"),
-  },
-  (t) => [unique("unique_user_category_name").on(t.userId, t.name)],
 );
 
 // will create user_preferences table when start working on UI

@@ -31,7 +31,7 @@ export type MonobankClientInfo = {
 export type MonobankStatementParameters = {
   account: string;
   from: string;
-  to: string;
+  to?: string;
 };
 
 export type MonobankTransaction = {
@@ -40,9 +40,10 @@ export type MonobankTransaction = {
   description: string;
   mcc: number;
   amount: number;
+  operationAmount: number;
   currencyCode: number;
   commissionRate: number;
   cashbackAmount: number;
   balance: number;
-  comment: string;
+  comment?: string;
 };

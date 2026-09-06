@@ -9,7 +9,15 @@ import {
 } from "@server/integrations/monobank/monobank.types.js";
 import { BankProviders } from "@server/types/dbEnums.js";
 import type { Account } from "@server/modules/account/account.module.js";
-import { encryptToken } from "@server/utils/encryptDecryptToken.js";
+import {
+  encryptToken,
+  decryptToken,
+} from "@server/utils/encryptDecryptToken.js";
+import { AuthError } from "@server/errors/AppErrors.js";
+import type {
+  MonobankStatementParameters,
+  MonobankTransaction,
+} from "@server/integrations/monobank/monobank.types.js";
 
 export class BankService {
   private readonly accountService = new AccountService();
@@ -57,5 +65,24 @@ export class BankService {
     return clientInfo;
   }
 
-  async getStatement() {}
+  async getStatement(userId: number, params: MonobankStatementParameters) {
+    const encryptedUserToken: string | null = (
+      await this.userService.findUserById(userId)
+    ).bankToken;
+    if (!encryptedUserToken) {
+      throw new AuthError("User doesn't have a bank token. Cannot access.");
+    }
+    const userToken: string = decryptToken(encryptedUserToken);
+    const transactions: MonobankTransaction[] =
+      await this.monobankClient.getStatement(userToken, params);
+
+    if (transactions.length > 0) {
+      for (const transaction of transactions) {
+        const transactionWithId = {
+          userId: userId,
+          ...transaction,
+        };
+      }
+    }
+  }
 }
