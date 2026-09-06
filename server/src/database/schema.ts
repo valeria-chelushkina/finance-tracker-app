@@ -19,10 +19,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { users } from "@server/modules/user/user.module.js";
 import { accounts } from "@server/modules/account/account.module.js";
-import {
-  PaymentTypes,
-  PaymentFrequencyTypes,
-} from "@server/types/dbEnums.js";
+import { PaymentTypes, PaymentFrequencyTypes } from "@server/types/dbEnums.js";
 
 export const paymentTypesEnum = pgEnum(
   "paument_type",
@@ -52,8 +49,10 @@ export const transactionsTable = pgTable(
     transactionId: varchar("transaction_id", { length: 255 }).unique(),
     transactionTime: timestamp("transaction_time"),
     description: varchar({ length: 255 }),
-    //category
-    amount: doublePrecision().notNull(), // commision will be included (if it exists)
+    category: integer().references(() => categoriesTable.id, {
+      onDelete: "cascade",
+    }),
+    amount: doublePrecision().notNull(),
     currencyCode: isoCurrencyColumn(),
     commissionRate: doublePrecision("commission_rate"),
     cashbackAmout: doublePrecision("cashback_amount"),
@@ -70,6 +69,9 @@ export const recurringTransactionsTable = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     name: varchar({ length: 255 }).notNull().unique(),
+    category: integer().references(() => categoriesTable.id, {
+      onDelete: "cascade",
+    }),
     amount: doublePrecision().notNull(),
     currencyCode: isoCurrencyColumn(),
     nextDueDate: date("next_due_date"),
@@ -89,7 +91,9 @@ export const budgetsTable = pgTable(
     userId: integer("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    category: varchar({ length: 255 }),
+    category: integer().references(() => categoriesTable.id, {
+      onDelete: "cascade",
+    }),
     items: jsonb(),
     limitAmount: doublePrecision("limit_amount"),
     month: integer(),
@@ -113,7 +117,9 @@ export const wishlistsTable = pgTable(
     amount: doublePrecision(),
     currencyCode: isoCurrencyColumn(),
     url: text(),
-    // category
+    category: integer().references(() => categoriesTable.id, {
+      onDelete: "cascade",
+    }),
   },
   (t) => [
     isoCurrencyCheck("wishlists"),
@@ -140,22 +146,30 @@ export const statisticsTable = pgTable(
   ],
 );
 
-export const categoriesTable = pgTable("categories", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  userId: integer("user_id").references(() => users.id, {
-    onDelete: "cascade",
-  }),
-  name: varchar({ length: 255 }).notNull().unique(),
-  color: varchar({ length: 7 }),
-  icon: varchar({ length: 255 }),
-  isComposite: boolean("is_composite").default(false).notNull(),
-  mccCodes: integer("mcc_codes")
-    .array()
-    .default(sql`ARRAY[]::integer[]`),
-  includedCategories: integer("included_categories")
-    .array()
-    .default(sql`ARRAY[]::integer[]`),
-});
+export const categoriesTable = pgTable(
+  "categories",
+  {
+    id: integer().primaryKey().generatedAlwaysAsIdentity(),
+    userId: integer("user_id").references(() => users.id, {
+      onDelete: "cascade",
+    }),
+    name: varchar({ length: 255 }).notNull(),
+    color: varchar({ length: 7 }),
+    icon: varchar({ length: 255 }),
+    isComposite: boolean("is_composite").default(false).notNull(),
+    mccCodes: integer("mcc_codes")
+      .array()
+      .default(sql`ARRAY[]::integer[]`),
+    includedCategories: integer("included_categories")
+      .array()
+      .default(sql`ARRAY[]::integer[]`),
+    shortDescriptionEn: varchar("short_description_en", { length: 255 }),
+    shortDescriptionUa: varchar("short_description_ua", { length: 255 }),
+    fullDescriptionEn: text("full_description_en"),
+    fullDescriptionUa: text("full_description_ua"),
+  },
+  (t) => [unique("unique_user_category_name").on(t.userId, t.name)],
+);
 
 // will create user_preferences table when start working on UI
 // will think where to add common bought by user items

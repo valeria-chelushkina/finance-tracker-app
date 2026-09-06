@@ -20,7 +20,7 @@ export class BankService {
 
     const clientInfo: MonobankClientInfo =
       await this.monobankClient.getClientInfo(userToken);
-      
+
     await this.userService.updateUser(userId, {
       bankToken: userToken,
       name: clientInfo.name,
@@ -55,4 +55,9 @@ export class BankService {
 
     return clientInfo;
   }
+
+  async getStatement() {
+    
+  }
+
 }

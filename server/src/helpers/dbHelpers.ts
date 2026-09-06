@@ -1,12 +1,7 @@
 import { integer, check } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
-import * as data from "@server/config/currencies.json" with { type: "json" };
+import { VALID_ISO_NUMS } from "@server/helpers/currencyHelpers.js";
 import { ValidationError } from "@server/errors/AppErrors.js";
-
-// get all ISO numbers from json file (maybe will improve and get not only ISO but also other values)
-const validIsoNums = Object.values(data.default)
-  .map((c) => c.ISOnum)
-  .filter((num): num is number => num !== null);
 
 export const isoCurrencyColumn = (name = "currency_code") =>
   integer(name).default(980);
@@ -17,7 +12,7 @@ export const isoCurrencyCheck = (
 ) =>
   check(
     `${tableName}_${colName}_check`,
-    sql`${sql.identifier(colName)} IN ${validIsoNums}`,
+    sql`${sql.identifier(colName)} IN ${VALID_ISO_NUMS}`,
   );
 
 // when user wants to choose a date for budget - it will validate the date
