@@ -13,6 +13,7 @@ export class MonobankClient {
 
   private async getApiResponse(userToken: string, requestUrl: string) {
     const response: Response = await fetch(requestUrl, {
+      method: "GET",
       headers: {
         "Content-Type": "application/json",
         "X-Token": userToken,
@@ -24,7 +25,9 @@ export class MonobankClient {
     }
 
     if (response.status === 403 || response.status === 401) {
-      throw new AuthError("Request is unauthorized or forbidden.");
+      throw new AuthError(
+        "Request is unauthorized or forbidden: " + (await response.text()),
+      );
     }
 
     if (response.status === 429) {
@@ -49,6 +52,7 @@ export class MonobankClient {
       userToken,
       requestUrl,
     );
+
     return data;
   }
 

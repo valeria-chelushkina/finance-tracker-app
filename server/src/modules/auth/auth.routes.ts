@@ -1,8 +1,8 @@
-import express from "express";
+import { Router } from "express";
 import { AuthController } from "@server/modules/auth/auth.controller.js";
 import { authMiddleware } from "@server/middlewares/authMiddleware.js";
 
-const authRouter = express.Router();
+const authRouter = Router();
 const authController = new AuthController();
 
 authRouter.post("/login", authController.login);

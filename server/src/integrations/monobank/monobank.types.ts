@@ -3,8 +3,8 @@ import { CardTypes, CashbackTypes } from "@server/types/dbEnums.js";
 export type MonobankAccount = {
   id: string;
   sendId: string;
-  balance: bigint;
-  creditLimit: bigint;
+  balance: number;
+  creditLimit: number;
   type: CardTypes;
   currencyCode: number;
   cashbackType: CashbackTypes;
@@ -18,12 +18,11 @@ export type MonobankJar = {
   title: string;
   description: string;
   currencyCode: number;
-  balance: bigint;
-  goal: bigint;
+  balance: number;
+  goal: number;
 };
 
 export type MonobankClientInfo = {
-  clientId: string;
   name: string;
   accounts: MonobankAccount[];
   jars: MonobankJar[];
@@ -37,13 +36,13 @@ export type MonobankTransactionParameters = {
 
 export type MonobankTransaction = {
   id: string;
-  time: bigint;
+  time: number;
   description: string;
   mcc: number;
-  amount: bigint;
+  amount: number;
   currencyCode: number;
-  commissionRate: bigint;
-  cashbackAmount: bigint;
-  balance: bigint;
+  commissionRate: number;
+  cashbackAmount: number;
+  balance: number;
   comment: string;
 };

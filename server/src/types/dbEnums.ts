@@ -11,6 +11,7 @@ export enum CardTypes {
   Fop = "fop",
   Yellow = "yellow",
   EAid = "eAid",
+  MadeInUkraine = "madeInUkraine",
 }
 
 export enum PaymentTypes {
