@@ -1,6 +1,7 @@
 import {
   MonobankClientInfo,
-  MonobankTransactionParameters,
+  MonobankStatementParameters,
+  MonobankTransaction,
 } from "@server/integrations/monobank/monobank.types.js";
 import {
   AppError,
@@ -56,13 +57,13 @@ export class MonobankClient {
     return data;
   }
 
-  async getTransaction(
+  async getStatement(
     userToken: string,
-    params: MonobankTransactionParameters,
-  ) {
+    params: MonobankStatementParameters,
+  ): Promise<MonobankTransaction[]> {
     const requestUrl = `${this.baseURL}//statement/${params.account}/${params.from}/${params.to}`;
 
-    const data: MonobankClientInfo = await this.getApiResponse(
+    const data: MonobankTransaction[] = await this.getApiResponse(
       userToken,
       requestUrl,
     );

@@ -28,7 +28,7 @@ export type MonobankClientInfo = {
   jars: MonobankJar[];
 };
 
-export type MonobankTransactionParameters = {
+export type MonobankStatementParameters = {
   account: string;
   from: string;
   to: string;
