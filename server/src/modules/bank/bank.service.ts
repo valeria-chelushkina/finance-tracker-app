@@ -4,11 +4,6 @@ import { UserService } from "@server/modules/user/user.service.js";
 import { CategoryService } from "@server/modules/category/category.service.js";
 import { TransactionService } from "@server/modules/transaction/transaction.service.js";
 import { MonobankClient } from "@server/integrations/monobank/monobank.client.js";
-import {
-  MonobankClientInfo,
-  MonobankAccount,
-  MonobankJar,
-} from "@server/integrations/monobank/monobank.types.js";
 import { BankProviders, PaymentTypes } from "@server/types/dbEnums.js";
 import type { Account } from "@server/modules/account/account.module.js";
 import {
@@ -23,7 +18,10 @@ import {
 import type {
   MonobankStatementParameters,
   MonobankTransaction,
-} from "@server/integrations/monobank/monobank.types.js";
+  MonobankClientInfo,
+  MonobankAccount,
+  MonobankJar,
+} from "@server/types/monobankTypes.js";
 import { Jar } from "@server/modules/jar/jar.module.js";
 import { Transaction } from "@server/modules/transaction/transaction.module.js";
 
@@ -38,7 +36,7 @@ export class BankService {
   private async validateStatementParameters(
     params: MonobankStatementParameters,
     currentUserId: number,
-  ) {
+  ): Promise<void> {
     const timeNow: number = Date.now();
 
     const targetDate: Date = new Date();
@@ -67,7 +65,10 @@ export class BankService {
     }
   }
 
-  async connectMonobank(userToken: string, userId: number) {
+  async connectMonobank(
+    userToken: string,
+    userId: number,
+  ): Promise<MonobankClientInfo> {
     const clientInfo: MonobankClientInfo =
       await this.monobankClient.getClientInfo(userToken);
 
@@ -122,7 +123,10 @@ export class BankService {
     return clientInfo;
   }
 
-  async getStatement(userId: number, params: MonobankStatementParameters) {
+  async getStatement(
+    userId: number,
+    params: MonobankStatementParameters,
+  ): Promise<MonobankTransaction[]> {
     this.validateStatementParameters(params, userId);
 
     const encryptedUserToken: string | null = (
@@ -136,9 +140,7 @@ export class BankService {
       await this.monobankClient.getStatement(userToken, params);
 
     if (transactions.length > 0) {
-      let count = 0;
       for (const transaction of transactions) {
-        count++;
         const transactionCategoryId: number = (
           await this.categoryService.findcategoryByMcc(
             transaction.mcc,
@@ -150,8 +152,7 @@ export class BankService {
           await this.accountService.findCardById(params.account)
         ).id;
 
-        const transactionTimestamp: number = transaction.time;
-        const transactionTime: Date = new Date(transactionTimestamp * 1000);
+        const transactionTime: Date = new Date(transaction.time * 1000);
 
         const fullTransaction: Omit<Transaction, "id"> = {
           ...transaction,

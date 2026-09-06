@@ -18,7 +18,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { users } from "@server/modules/user/user.module.js";
 import { categories } from "@server/modules/category/category.module.js";
-import { PaymentFrequencyTypes,  } from "@server/types/dbEnums.js";
+import { PaymentFrequencyTypes } from "@server/types/dbEnums.js";
 
 // 1: transaction happens every * days
 // 2: transaction happens on * day of every month

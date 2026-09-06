@@ -133,8 +133,7 @@ const CATEGORIES = [
     name: "Flowers",
     shortDescriptionEn: "Flowers",
     shortDescriptionUa: "Квіти",
-    fullDescriptionEn:
-      "Florists, flower shops, and floral supply wholesalers.",
+    fullDescriptionEn: "Florists, flower shops, and floral supply wholesalers.",
     fullDescriptionUa:
       "Квіткові магазини, салони флористики та оптові постачальники квітів.",
     mccCodes: [5193, 5992],
@@ -157,7 +156,9 @@ const CATEGORIES = [
       "Electricity, gas, water, internet, cable TV, and telephone utility payments.",
     fullDescriptionUa:
       "Оплата електроенергії, газу, води, інтернету, кабельного телебачення та телефонних послуг.",
-    mccCodes: [4811, 4812, 4813, 4814, 4816, 4821, 4899, 4900, 4911, 4924, 4941, 4991],
+    mccCodes: [
+      4811, 4812, 4813, 4814, 4816, 4821, 4899, 4900, 4911, 4924, 4941, 4991,
+    ],
   },
   {
     name: "Beauty & Health",
@@ -176,8 +177,7 @@ const CATEGORIES = [
     name: "Courier Services",
     shortDescriptionEn: "Courier Services",
     shortDescriptionUa: "Кур'єрські послуги",
-    fullDescriptionEn:
-      "Courier, express delivery, and air freight services.",
+    fullDescriptionEn: "Courier, express delivery, and air freight services.",
     fullDescriptionUa:
       "Кур'єрські послуги, експрес-доставка та авіаційні вантажні послуги.",
     mccCodes: [4215, 4225],
@@ -227,15 +227,33 @@ const CATEGORIES = [
       // Airlines (3056-3302), Car Rentals (3303-3499), Hotels/Lodging (3500-3999)
       ...range(3056, 3999),
       // Rail, local transport, ferries, buses
-      4011, 4111, 4112, 4131,
+      4011,
+      4111,
+      4112,
+      4131,
       // Bridges, tolls, steamship
-      4304, 4411, 4415, 4418, 4457, 4468,
+      4304,
+      4411,
+      4415,
+      4418,
+      4457,
+      4468,
       // Air transport, airports, travel agencies
-      4511, 4582, 4722, 4784, 4789,
+      4511,
+      4582,
+      4722,
+      4784,
+      4789,
       // Vacation packages, timeshares
-      5962, 6513,
+      5962,
+      6513,
       // Hotels, lodging, campgrounds, trailer parks, boat rentals
-      7011, 7032, 7033, 7512, 7513, 7519,
+      7011,
+      7032,
+      7033,
+      7512,
+      7513,
+      7519,
     ],
   },
   {
@@ -340,8 +358,7 @@ const CATEGORIES = [
     name: "Jewelry",
     shortDescriptionEn: "Jewelry",
     shortDescriptionUa: "Ювелірні вироби",
-    fullDescriptionEn:
-      "Jewelry stores, watch shops, and precious metal goods.",
+    fullDescriptionEn: "Jewelry stores, watch shops, and precious metal goods.",
     fullDescriptionUa:
       "Ювелірні магазини, магазини годинників та вироби з дорогоцінних металів.",
     mccCodes: [5094, 5944],

@@ -1,6 +1,10 @@
 import { BankService } from "@server/modules/bank/bank.service.js";
 import { Request, Response } from "express";
-import type { MonobankStatementParameters } from "@server/integrations/monobank/monobank.types.js";
+import type {
+  MonobankStatementParameters,
+  MonobankClientInfo,
+  MonobankTransaction,
+} from "@server/types/monobankTypes.js";
 
 export class BankController {
   private readonly bankService = new BankService();
@@ -12,10 +16,8 @@ export class BankController {
     const { userToken } = req.body;
     const userId: number = req.user!.userId;
 
-    const clientInfo = await this.bankService.connectMonobank(
-      userToken,
-      userId,
-    );
+    const clientInfo: MonobankClientInfo =
+      await this.bankService.connectMonobank(userToken, userId);
 
     res.status(200).json({
       message: "Token and client information was added successfully.",
@@ -31,7 +33,8 @@ export class BankController {
 
     const userId: number = req.user!.userId;
 
-    const statement = await this.bankService.getStatement(userId, params);
+    const statement: MonobankTransaction[] =
+      await this.bankService.getStatement(userId, params);
 
     res.status(200).json({
       message: "Got statement successfully.",

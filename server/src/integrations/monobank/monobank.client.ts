@@ -2,7 +2,7 @@ import {
   MonobankClientInfo,
   MonobankStatementParameters,
   MonobankTransaction,
-} from "@server/integrations/monobank/monobank.types.js";
+} from "@server/types/monobankTypes.js";
 import {
   AppError,
   ValidationError,
@@ -12,9 +12,20 @@ import {
 export class MonobankClient {
   private readonly baseURL = "https://api.monobank.ua/personal";
 
+  private async parseErrorText(response: Response): Promise<string> {
+    const errText: string = await response.text();
+    let errorMessage = errText;
+
+    try {
+      const parsed = JSON.parse(errText);
+      return (errorMessage = parsed.errorDescription || errText);
+    } catch {
+      return errText;
+    }
+  }
+
   private async getApiResponse(userToken: string, requestUrl: string) {
     const response: Response = await fetch(requestUrl, {
-      method: "GET",
       headers: {
         "Content-Type": "application/json",
         "X-Token": userToken,
@@ -27,7 +38,8 @@ export class MonobankClient {
 
     if (response.status === 403 || response.status === 401) {
       throw new AuthError(
-        "Request is unauthorized or forbidden: " + (await response.text()),
+        "Request is unauthorized or forbidden: " +
+          (await this.parseErrorText(response)),
       );
     }
 
@@ -39,8 +51,10 @@ export class MonobankClient {
     }
 
     if (!response.ok) {
-      const err = await response.text();
-      throw new AppError(`Monobank API error: ${err}`, response.status);
+      throw new AppError(
+        `Monobank API error: ${await this.parseErrorText(response)}`,
+        response.status,
+      );
     }
 
     return response.json();
@@ -61,7 +75,7 @@ export class MonobankClient {
     userToken: string,
     params: MonobankStatementParameters,
   ): Promise<MonobankTransaction[]> {
-    const requestUrl = `${this.baseURL}/statement/${params.account}/${params.from}/${params.to ? params.to : ''}`;
+    const requestUrl = `${this.baseURL}/statement/${params.account}/${params.from}/${params.to ? params.to : ""}`;
 
     const data: MonobankTransaction[] = await this.getApiResponse(
       userToken,
