@@ -1,6 +1,3 @@
-// Database tables
-// Some tables, as for now, are built to fit monobank api
-
 import {
   isoCurrencyColumn,
   isoCurrencyCheck,
@@ -20,29 +17,16 @@ import {
   check,
   unique,
 } from "drizzle-orm/pg-core";
-
 import { users } from "@server/modules/user/user.module.js";
+import { accounts } from "@server/modules/account/account.module.js";
 import {
-  BankProviders,
   PaymentTypes,
-  CashbackTypes,
   PaymentFrequencyTypes,
-  CardTypes,
 } from "@server/types/dbEnums.js";
-
-export const banksEnum = pgEnum(
-  "bank_name",
-  Object.values(BankProviders) as [string, ...string[]],
-);
 
 export const paymentTypesEnum = pgEnum(
   "paument_type",
   Object.values(PaymentTypes) as [string, ...string[]],
-);
-
-export const cashbackTypesEnum = pgEnum(
-  "cashback_type",
-  Object.values(CashbackTypes) as [string, ...string[]],
 );
 
 // 1: transaction happens every * days
@@ -50,42 +34,6 @@ export const cashbackTypesEnum = pgEnum(
 export const frequencyTypesEnum = pgEnum(
   "frequency_type",
   Object.values(PaymentFrequencyTypes) as [string, ...string[]],
-);
-
-// monobank card types
-export const typesEnum = pgEnum(
-  "type",
-  Object.values(CardTypes) as [string, ...string[]],
-);
-
-export const accountsTable = pgTable(
-  "accounts",
-  {
-    id: integer().primaryKey().generatedAlwaysAsIdentity(),
-    userId: integer("user_id")
-      .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
-    bankName: banksEnum().default(BankProviders.Monobank).notNull(),
-    cardId: varchar("card_id", { length: 255 }).unique(),
-    sendId: varchar("send_id", { length: 255 }).unique(),
-    currencyCode: isoCurrencyColumn(),
-    cashbackType: cashbackTypesEnum(),
-    balance: doublePrecision(),
-    creditLimit: doublePrecision("credit_limit"),
-    maskedPan: varchar("masked_pan", { length: 19 })
-      .array()
-      .notNull()
-      .default(sql`'{}'::text[]`),
-    type: typesEnum().default(CardTypes.Black).notNull(),
-    iban: varchar({ length: 34 }),
-  },
-  (t) => [
-    isoCurrencyCheck("accounts"),
-    check(
-      "cashback_type_card",
-      sql`(${t.cashbackType} = 'Miles' AND (${t.type} = 'platinum' OR ${t.type} = 'iron')) OR (${t.cashbackType} <> 'Miles' OR ${t.cashbackType} IS NULL)`,
-    ),
-  ],
 );
 
 // only successful transactions - if transaction didn't go through, it will not be saved
@@ -98,7 +46,7 @@ export const transactionsTable = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     paymentType: paymentTypesEnum().default(PaymentTypes.Card),
-    accountId: integer("account_id").references(() => accountsTable.id, {
+    accountId: integer("account_id").references(() => accounts.id, {
       onDelete: "cascade",
     }),
     transactionId: varchar("transaction_id", { length: 255 }).unique(),
@@ -121,7 +69,7 @@ export const recurringTransactionsTable = pgTable(
     userId: integer("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    name: varchar({ length: 255 }).notNull().unique(), // to prevent same name
+    name: varchar({ length: 255 }).notNull().unique(),
     amount: doublePrecision().notNull(),
     currencyCode: isoCurrencyColumn(),
     nextDueDate: date("next_due_date"),
@@ -152,24 +100,6 @@ export const budgetsTable = pgTable(
     check("limit_amount_check", sql`${t.limitAmount} >= 0`),
     unique("unique_budget").on(t.category, t.month, t.year),
   ],
-);
-
-export const jarsTable = pgTable(
-  "jars",
-  {
-    id: integer().primaryKey().generatedAlwaysAsIdentity(),
-    userId: integer("user_id")
-      .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
-    jarId: varchar("jar_id").notNull().unique(),
-    sendId: varchar("send_id").notNull().unique(),
-    title: varchar({ length: 255 }),
-    description: varchar({ length: 255 }),
-    currencyCode: isoCurrencyColumn(),
-    balance: doublePrecision(),
-    goal: doublePrecision(),
-  },
-  () => [isoCurrencyCheck("jars")],
 );
 
 export const wishlistsTable = pgTable(
