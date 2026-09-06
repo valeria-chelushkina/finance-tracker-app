@@ -7,7 +7,6 @@ import {
   integer,
   pgTable,
   varchar,
-  timestamp,
   doublePrecision,
   date,
   pgEnum,
@@ -18,6 +17,7 @@ import {
   unique,
 } from "drizzle-orm/pg-core";
 import { users } from "@server/modules/user/user.module.js";
+import { categories } from "@server/modules/category/category.module.js";
 import { PaymentTypes, PaymentFrequencyTypes } from "@server/types/dbEnums.js";
 
 export const paymentTypesEnum = pgEnum(
@@ -40,7 +40,7 @@ export const recurringTransactionsTable = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     name: varchar({ length: 255 }).notNull().unique(),
-    category: integer().references(() => categoriesTable.id, {
+    category: integer().references(() => categories.id, {
       onDelete: "cascade",
     }),
     amount: doublePrecision().notNull(),
@@ -62,7 +62,7 @@ export const budgetsTable = pgTable(
     userId: integer("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    category: integer().references(() => categoriesTable.id, {
+    category: integer().references(() => categories.id, {
       onDelete: "cascade",
     }),
     items: jsonb(),
@@ -88,7 +88,7 @@ export const wishlistsTable = pgTable(
     amount: doublePrecision(),
     currencyCode: isoCurrencyColumn(),
     url: text(),
-    category: integer().references(() => categoriesTable.id, {
+    category: integer().references(() => categories.id, {
       onDelete: "cascade",
     }),
   },

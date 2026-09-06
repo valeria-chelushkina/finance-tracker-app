@@ -45,5 +45,5 @@ export type MonobankTransaction = {
   commissionRate: number;
   cashbackAmount: number;
   balance: number;
-  comment?: string;
+  comment: string | null;
 };

@@ -1,29 +1,65 @@
 import { AccountService } from "@server/modules/account/account.service.js";
 import { JarService } from "@server/modules/jar/jar.service.js";
 import { UserService } from "@server/modules/user/user.service.js";
+import { CategoryService } from "@server/modules/category/category.service.js";
+import { TransactionService } from "@server/modules/transaction/transaction.service.js";
 import { MonobankClient } from "@server/integrations/monobank/monobank.client.js";
 import {
   MonobankClientInfo,
   MonobankAccount,
   MonobankJar,
 } from "@server/integrations/monobank/monobank.types.js";
-import { BankProviders } from "@server/types/dbEnums.js";
+import { BankProviders, PaymentTypes } from "@server/types/dbEnums.js";
 import type { Account } from "@server/modules/account/account.module.js";
 import {
   encryptToken,
   decryptToken,
 } from "@server/utils/encryptDecryptToken.js";
-import { AuthError } from "@server/errors/AppErrors.js";
+import { AuthError, ValidationError } from "@server/errors/AppErrors.js";
 import type {
   MonobankStatementParameters,
   MonobankTransaction,
 } from "@server/integrations/monobank/monobank.types.js";
+import { Jar } from "@server/modules/jar/jar.module.js";
+import { Transaction } from "@server/modules/transaction/transaction.module.js";
 
 export class BankService {
   private readonly accountService = new AccountService();
   private readonly jarService = new JarService();
   private readonly userService = new UserService();
+  private readonly categoryService = new CategoryService();
   private readonly monobankClient = new MonobankClient();
+  private readonly transactionService = new TransactionService();
+
+  private async validateStatementParameters(
+    params: MonobankStatementParameters,
+    currentUserId: number,
+  ) {
+    const timeNow: number = Date.now();
+
+    const targetDate: Date = new Date();
+
+    // 31 days + 1 hour from right now
+    targetDate.setDate(targetDate.getDate() - 31);
+    targetDate.setHours(targetDate.getHours() - 1);
+
+    const lastTimestamp: number = Math.floor(targetDate.getTime() / 1000);
+
+    // validation, considering api request limitations
+    if (
+      (params.to && (params.to > String(timeNow) || params.to < params.from)) ||
+      params.from < String(lastTimestamp)
+    ) {
+      throw new ValidationError("Invalid parameters input.");
+    }
+
+    const accountUserId: number = (
+      await this.accountService.findCardById(params.account)
+    ).userId;
+    if (accountUserId !== currentUserId) {
+      throw new AuthError("No access to this information.");
+    }
+  }
 
   async connectMonobank(userToken: string, userId: number) {
     const clientInfo: MonobankClientInfo =
@@ -41,10 +77,11 @@ export class BankService {
     if (userAccounts.length > 0) {
       for (const account of userAccounts) {
         const accountWithId: Omit<Account, "id"> = {
+          ...account,
           userId: userId,
           bankName: BankProviders.Monobank,
           cardId: account.id,
-          ...account,
+          balance: account.balance / 100,
         };
         await this.accountService.createAccount(accountWithId);
       }
@@ -53,10 +90,11 @@ export class BankService {
     const userJars: MonobankJar[] = clientInfo.jars;
     if (userJars.length > 0) {
       for (const jar of userJars) {
-        const jarWithId = {
+        const jarWithId: Omit<Jar, "id"> = {
+          ...jar,
           userId: userId,
           jarId: jar.id,
-          ...jar,
+          balance: jar.balance / 100,
         };
         await this.jarService.createJar(jarWithId);
       }
@@ -66,6 +104,8 @@ export class BankService {
   }
 
   async getStatement(userId: number, params: MonobankStatementParameters) {
+    this.validateStatementParameters(params, userId);
+
     const encryptedUserToken: string | null = (
       await this.userService.findUserById(userId)
     ).bankToken;
@@ -78,10 +118,29 @@ export class BankService {
 
     if (transactions.length > 0) {
       for (const transaction of transactions) {
-        const transactionWithId = {
-          userId: userId,
+        const transactionCategoryId: number = (
+          await this.categoryService.findcategoryByMcc(transaction.mcc)
+        ).id;
+
+        const accountId: number = (
+          await this.accountService.findCardById(params.account)
+        ).id;
+
+        const transactionTimestamp: number = transaction.time;
+        const transactionTime: Date = new Date(transactionTimestamp * 1000);
+
+        const fullTransaction: Omit<Transaction, "id"> = {
           ...transaction,
+          userId: userId,
+          category: transactionCategoryId,
+          paymentType: PaymentTypes.Card,
+          accountId: accountId,
+          transactionId: transaction.id,
+          transactionTime: transactionTime,
+          balance: transaction.balance / 100,
         };
+
+        await this.transactionService.createTransaction(fullTransaction);
       }
     }
   }

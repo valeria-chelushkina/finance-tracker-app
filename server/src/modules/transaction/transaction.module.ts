@@ -30,6 +30,7 @@ export const transactions = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     paymentType: paymentTypesEnum().default(PaymentTypes.Card),
+    balance: doublePrecision().notNull(),
     accountId: integer("account_id").references(() => accounts.id, {
       onDelete: "cascade",
     }),
@@ -43,7 +44,7 @@ export const transactions = pgTable(
     operationAmount: doublePrecision("operation_amount"),
     currencyCode: isoCurrencyColumn(),
     commissionRate: doublePrecision("commission_rate"),
-    cashbackAmout: doublePrecision("cashback_amount"),
+    cashbackAmount: doublePrecision("cashback_amount"),
     comment: varchar({ length: 255 }),
   },
   () => [isoCurrencyCheck("transactions")],

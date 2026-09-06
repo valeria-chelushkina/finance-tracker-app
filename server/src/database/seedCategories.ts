@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { DATABASE_URL } from "@server/database/db.consts.js";
-import { categoriesTable } from "@server/database/schema.js";
+import { categories } from "@server/modules/category/category.module.js";
 import { sql } from "drizzle-orm";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -357,9 +357,9 @@ async function seed() {
 
   // Remove all existing system categories (user_id IS NULL)
   const deleted = await db
-    .delete(categoriesTable)
-    .where(sql`${categoriesTable.userId} IS NULL`)
-    .returning({ id: categoriesTable.id });
+    .delete(categories)
+    .where(sql`${categories.userId} IS NULL`)
+    .returning({ id: categories.id });
 
   console.log(`Removed ${deleted.length} old system categories`);
 
@@ -376,17 +376,17 @@ async function seed() {
   }));
 
   const inserted = await db
-    .insert(categoriesTable)
+    .insert(categories)
     .values(values)
-    .returning({ id: categoriesTable.id, name: categoriesTable.name });
+    .returning({ id: categories.id, name: categories.name });
 
   console.log(`Inserted ${inserted.length} categories:`);
   inserted.forEach((c) => console.log(`     - ${c.name}`));
 
   const [count] = await db
     .select({ count: sql<number>`count(*)` })
-    .from(categoriesTable)
-    .where(sql`${categoriesTable.userId} IS NULL`);
+    .from(categories)
+    .where(sql`${categories.userId} IS NULL`);
 
   console.log(`\nTotal system categories in DB: ${count.count}`);
 
