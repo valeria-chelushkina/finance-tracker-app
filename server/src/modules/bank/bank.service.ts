@@ -9,6 +9,7 @@ import {
 } from "@server/integrations/monobank/monobank.types.js";
 import { BankProviders } from "@server/types/dbEnums.js";
 import type { Account } from "@server/modules/account/account.module.js";
+import { encryptToken } from "@server/utils/encryptDecryptToken.js";
 
 export class BankService {
   private readonly accountService = new AccountService();
@@ -17,12 +18,13 @@ export class BankService {
   private readonly monobankClient = new MonobankClient();
 
   async connectMonobank(userToken: string, userId: number) {
-
     const clientInfo: MonobankClientInfo =
       await this.monobankClient.getClientInfo(userToken);
 
+    const encryptedUserToken = encryptToken(userToken);
+
     await this.userService.updateUser(userId, {
-      bankToken: userToken,
+      bankToken: encryptedUserToken,
       name: clientInfo.name,
     });
 
@@ -40,7 +42,6 @@ export class BankService {
       }
     }
 
-    
     const userJars: MonobankJar[] = clientInfo.jars;
     if (userJars.length > 0) {
       for (const jar of userJars) {
@@ -56,8 +57,5 @@ export class BankService {
     return clientInfo;
   }
 
-  async getStatement() {
-    
-  }
-
+  async getStatement() {}
 }
