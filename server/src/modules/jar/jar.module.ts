@@ -13,11 +13,10 @@ import { users } from "@server/modules/user/user.module.js";
 export const jars = pgTable(
   "jars",
   {
-    id: integer().primaryKey().generatedAlwaysAsIdentity(),
+    id: integer().primaryKey().generatedByDefaultAsIdentity(),
     userId: integer("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    jarId: varchar("jar_id").notNull().unique(),
     sendId: varchar("send_id").notNull().unique(),
     title: varchar({ length: 255 }),
     description: varchar({ length: 255 }),

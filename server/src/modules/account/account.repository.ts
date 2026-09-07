@@ -1,24 +1,22 @@
 import type {
   Account,
-  CreateAccount,
   UpdateAccount,
 } from "@server/types/modules/accountTypes.js";
 import { accounts } from "@server/modules/account/account.module.js";
 import { db, DbClient } from "@server/database/databaseClient.js";
-import { eq } from "drizzle-orm";
 import { BaseRepository } from "@server/modules/base/base.repository.js";
 
 export class AccountRepository extends BaseRepository<
   typeof accounts,
   Account,
-  CreateAccount,
+  Account,
   UpdateAccount
 > {
   constructor(dbClient: DbClient = db) {
     super(accounts, dbClient);
   }
 
-  async createAccount(payload: CreateAccount): Promise<Account> {
+  async createAccount(payload: Account): Promise<Account> {
     return this.create(payload);
   }
 
@@ -41,12 +39,4 @@ export class AccountRepository extends BaseRepository<
     return this.delete(id);
   }
 
-  async findCardById(cardId: string): Promise<Account | null> {
-    const cardAccount = await this.dbClient
-      .select()
-      .from(accounts)
-      .where(eq(accounts.cardId, cardId))
-      .limit(1);
-    return cardAccount[0] || null;
-  }
 }

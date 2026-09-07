@@ -1,6 +1,7 @@
 import { UserRepository } from "@server/modules/user/user.repository.js";
 import type { User, UpdateUser } from "@server/types/modules/userTypes.js";
 import { NotFoundError, ValidationError } from "@server/errors/AppErrors.js";
+import { ErrorMessages } from "@server/errors/errorMessages.js";
 
 export class UserService {
   private readonly userRepository = new UserRepository();
@@ -9,9 +10,7 @@ export class UserService {
     const user = await this.userRepository.findUserById(id);
 
     if (!user) {
-      throw new NotFoundError(
-        "No user with such ID was found in database! Can't get info of non-existing user.",
-      );
+      throw new NotFoundError(ErrorMessages.notFoundById("user", id));
     }
 
     return user;
@@ -21,14 +20,9 @@ export class UserService {
     if (!payload) {
       throw new ValidationError("Payload is empty, nothing to update.");
     }
-    const updatedUser = await this.userRepository.updateUser(
-      id,
-      payload,
-    );
+    const updatedUser = await this.userRepository.updateUser(id, payload);
     if (!updatedUser) {
-      throw new NotFoundError(
-        "No user with such ID was found in database! Can't update non-existing user.",
-      );
+      throw new NotFoundError(ErrorMessages.notFoundById("user", "id"));
     }
     return updatedUser;
   }
@@ -36,9 +30,7 @@ export class UserService {
   async deleteUser(id: number): Promise<boolean> {
     const deletedUser = await this.userRepository.deleteUser(id);
     if (!deletedUser) {
-      throw new NotFoundError(
-        "No user with such ID was found in database! Can't delete non-existing user.",
-      );
+      throw new NotFoundError(ErrorMessages.notFoundById("user", "id"));
     }
 
     return deletedUser;

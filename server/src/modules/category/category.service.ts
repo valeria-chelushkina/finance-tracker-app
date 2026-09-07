@@ -1,16 +1,19 @@
 import { CategoryRepository } from "@server/modules/category/category.repository.js";
-import type { Category, CreateCategory } from "@server/types/modules/categoryTypes.js";
+import type {
+  Category,
+  CreateCategory,
+} from "@server/types/modules/categoryTypes.js";
 import { AppError, NotFoundError } from "@server/errors/AppErrors.js";
+import { ErrorMessages } from "@server/errors/errorMessages.js";
 
 export class CategoryService {
   private readonly categoryRepository = new CategoryRepository();
 
   async createCategory(payload: CreateCategory): Promise<Category> {
-    const newCategory =
-      await this.categoryRepository.createCategory(payload);
+    const newCategory = await this.categoryRepository.createCategory(payload);
     if (!newCategory) {
       throw new AppError(
-        "There was an error while creating new category.",
+        ErrorMessages.createFailed('category'),
         500,
       );
     }
@@ -18,20 +21,17 @@ export class CategoryService {
   }
 
   async getCategoryByMcc(mcc: number, originalMcc: number): Promise<Category> {
-    const categoryMcc =
-      await this.categoryRepository.findCategoryByMcc(mcc);
+    const categoryMcc = await this.categoryRepository.findCategoryByMcc(mcc);
     const categoryOriginalMcc =
       await this.categoryRepository.findCategoryByMcc(originalMcc);
 
     if (!categoryMcc && !categoryOriginalMcc) {
       throw new NotFoundError(
-        "No category with such mcc was found in database!",
+        ErrorMessages.notFoundByField("category", "mcc code"),
       );
     }
 
-    const returnCategory = categoryMcc
-      ? categoryMcc!
-      : categoryOriginalMcc!;
+    const returnCategory = categoryMcc ? categoryMcc! : categoryOriginalMcc!;
 
     return returnCategory;
   }

@@ -42,7 +42,6 @@ export const accounts = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     bankName: banksEnum().default(BankProviders.Monobank).notNull(),
-    cardId: varchar("card_id", { length: 255 }).unique().notNull(),
     sendId: varchar("send_id", { length: 255 }).unique(),
     currencyCode: isoCurrencyColumn(),
     cashbackType: cashbackTypesEnum(),

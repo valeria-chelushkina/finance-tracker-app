@@ -6,13 +6,14 @@ import { CategoryService } from "@server/modules/category/category.service.js";
 import { TransactionService } from "@server/modules/transaction/transaction.service.js";
 import { MonobankClient } from "@server/integrations/monobank/monobank.client.js";
 import { BankProviders, PaymentTypes } from "@server/types/dbEnums.js";
-import type { CreateAccount } from "@server/types/modules/accountTypes.js";
+import type { Account } from "@server/types/modules/accountTypes.js";
 import { encryptToken, decryptToken } from "@server/utils/encryptUtils.js";
 import {
   AuthError,
   ConflictError,
   NotFoundError,
 } from "@server/errors/AppErrors.js";
+import { ErrorMessages } from "@server/errors/errorMessages.js";
 import type {
   MonobankStatementParameters,
   MonobankTransaction,
@@ -20,7 +21,7 @@ import type {
   MonobankAccount,
   MonobankJar,
 } from "@server/types/monobankTypes.js";
-import { CreateJar } from "@server/types/modules/jarTypes.js";
+import { Jar } from "@server/types/modules/jarTypes.js";
 import { Transaction } from "@server/types/modules/transactionTypes.js";
 import { validateStatementTimeRange } from "@server/helpers/monobankValidationHelpers.js";
 
@@ -42,14 +43,13 @@ export class BankService {
     userToken: string,
     userId: number,
   ): Promise<MonobankClientInfo> {
-    const clientInfo =
-      await this.monobankClient.getClientInfo(userToken);
+    const clientInfo = await this.monobankClient.getClientInfo(userToken);
 
     await this.syncUserInfo(userId, userToken, clientInfo);
 
     const userAccounts = clientInfo.accounts;
 
-    await this.createEntriesTemplate<MonobankAccount, CreateAccount>(
+    await this.createEntriesTemplate<MonobankAccount, Account>(
       userId,
       userAccounts,
       this.mapToAccount,
@@ -58,7 +58,7 @@ export class BankService {
 
     const userJars = clientInfo.jars;
 
-    await this.createEntriesTemplate<MonobankJar, CreateJar>(
+    await this.createEntriesTemplate<MonobankJar, Jar>(
       userId,
       userJars,
       this.mapToJar,
@@ -72,20 +72,21 @@ export class BankService {
     userId: number,
     params: MonobankStatementParameters,
   ): Promise<MonobankTransaction[]> {
-
     this.validateStatementParameters(params, userId);
 
     const userToken = await this.decryptUserToken(userId);
-    
-    const transactions =
-      await this.monobankClient.getStatement(userToken, params);
+
+    const transactions = await this.monobankClient.getStatement(
+      userToken,
+      params,
+    );
 
     await this.createEntriesTemplate<MonobankTransaction, Transaction>(
       userId,
       transactions,
       this.mapToTransaction,
       this.transactionService.createTransaction,
-      params.account,
+      parseInt(params.account),
     );
 
     return transactions;
@@ -107,7 +108,6 @@ export class BankService {
   }
 
   private async decryptUserToken(userId: number): Promise<string> {
-
     const user = await this.userService.getUserById(userId);
 
     const encryptedUserToken = user.bankToken;
@@ -124,10 +124,10 @@ export class BankService {
     fillCallback: (
       userId: number,
       entry: T,
-      account?: string,
+      account?: number,
     ) => Promise<TFull> | TFull,
     createCallback: (fullEntry: TFull) => Promise<TFull>,
-    account?: string,
+    account?: number,
   ) {
     if (entries.length > 0) {
       for (const entry of entries) {
@@ -145,21 +145,19 @@ export class BankService {
 
   // === mapping functions ===
 
-  private mapToAccount(userId: number, account: MonobankAccount): CreateAccount {
+  private mapToAccount(userId: number, account: MonobankAccount): Account {
     return {
       ...account,
       userId: userId,
       bankName: BankProviders.Monobank,
-      cardId: account.id,
       balance: account.balance / 100,
     };
   }
 
-  private mapToJar(userId: number, jar: MonobankJar): CreateJar {
+  private mapToJar(userId: number, jar: MonobankJar): Jar {
     return {
       ...jar,
       userId: userId,
-      jarId: jar.id,
       balance: jar.balance / 100,
       goal: jar.goal / 100,
     };
@@ -168,9 +166,9 @@ export class BankService {
   private async mapToTransaction(
     userId: number,
     transaction: MonobankTransaction,
-    account?: string,
+    account?: number,
   ): Promise<Transaction> {
-    const targetAccount = account ?? "0";
+    const targetAccount = account ?? 0;
     const transactionFetchedInfo = await this.fetchInfoForTransaction(
       transaction,
       targetAccount,
@@ -193,7 +191,7 @@ export class BankService {
 
   private async fetchInfoForTransaction(
     transaction: MonobankTransaction,
-    account: string,
+    account: number,
   ): Promise<TransactionFetchedInfo> {
     const transactionByMcc = await this.categoryService.getCategoryByMcc(
       transaction.mcc,
@@ -202,10 +200,12 @@ export class BankService {
 
     const transactionCategoryId = transactionByMcc.id;
 
-    const userAccount = await this.accountRepository.findCardById(account);
+    const userAccount = await this.accountRepository.findAccountById(account);
 
     if (!userAccount) {
-      throw new NotFoundError("No account was found.");
+      throw new NotFoundError(
+        ErrorMessages.notFoundByField("account", "card ID", account),
+      );
     }
 
     const userAccountId = userAccount.id;
@@ -219,13 +219,15 @@ export class BankService {
   // === validate helpers ===
 
   private async validateAccountOwnership(
-    cardId: string,
+    cardId: number,
     userId: number,
   ): Promise<number> {
-    const account = await this.accountRepository.findCardById(cardId);
+    const account = await this.accountRepository.findAccountById(cardId);
 
     if (!account) {
-      throw new NotFoundError("Account not found.");
+      throw new NotFoundError(
+        ErrorMessages.notFoundByField("account", "card ID", cardId),
+      );
     }
 
     if (account.userId !== userId) {
@@ -240,6 +242,9 @@ export class BankService {
     currentUserId: number,
   ): Promise<void> {
     validateStatementTimeRange(params.from, params.to);
-    await this.validateAccountOwnership(params.account, currentUserId);
+    await this.validateAccountOwnership(
+      parseInt(params.account),
+      currentUserId,
+    );
   }
 }

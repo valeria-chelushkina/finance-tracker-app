@@ -1,7 +1,7 @@
 import { CardTypes, CashbackTypes } from "@server/types/dbEnums.js";
 
 export type MonobankAccount = {
-  id: string;
+  id: number;
   sendId: string;
   balance: number;
   creditLimit: number;
@@ -13,7 +13,7 @@ export type MonobankAccount = {
 };
 
 export type MonobankJar = {
-  id: string;
+  id: number;
   sendId: string;
   title: string;
   description: string;
