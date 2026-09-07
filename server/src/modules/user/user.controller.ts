@@ -1,7 +1,7 @@
 import { UserService } from "@server/modules/user/user.service.js";
 import { UserRepository } from "@server/modules/user/user.repository.js";
 import { Request, Response } from "express";
-import type { User, UpdateUser } from "@server/modules/user/user.module.js";
+import type { User, UpdateUser } from "@server/types/modules/userTypes.js";
 import {
   COOKIE_NAMES,
   cookieAccessOptions,
@@ -10,10 +10,9 @@ import {
 
 export class UserController {
   private readonly userService = new UserService();
-  private readonly userRepository = new UserRepository();
 
   getUserById = async (req: Request, res: Response) => {
-    const userId: number = req.user.userId;
+    const userId = req.user.userId;
 
     const user: User = await this.userService.getUserById(userId);
     res.status(200).json(user);
@@ -24,15 +23,15 @@ export class UserController {
     req: Request<unknown, unknown, UpdateUser>,
     res: Response,
   ) => {
-    const userPayload: UpdateUser = req.body || {};
-    const userId: number = req.user.userId;
+    const userPayload = req.body || {};
+    const userId = req.user.userId;
 
     const user: User = await this.userService.updateUser(userId, userPayload);
     res.status(200).json(user);
   };
 
   deleteUserById = async (req: Request, res: Response) => {
-    const userId: number = req.user.userId;
+    const userId = req.user.userId;
 
     await this.userService.deleteUser(userId);
     res.clearCookie(COOKIE_NAMES.ACCESS_TOKEN, cookieAccessOptions);

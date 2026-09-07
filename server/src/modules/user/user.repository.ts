@@ -1,4 +1,4 @@
-import type { User, UpdateUser } from "@server/modules/user/user.module.js";
+import type { User, UpdateUser } from "@server/types/modules/userTypes.js"
 import { UserInfo } from "@server/types/generalTypes.js";
 import { users } from "@server/modules/user/user.module.js";
 import { db, DbClient } from "@server/database/databaseClient.js";

@@ -5,5 +5,5 @@ import { authMiddleware } from "@server/middlewares/authMiddleware.js";
 export const bankRouter = Router();
 const bankController = new BankController();
 
-bankRouter.get("/connect", authMiddleware, bankController.connectMonobank);
-bankRouter.get("/statement", authMiddleware, bankController.getStatement);
+bankRouter.get("/connectMonobank", authMiddleware, bankController.connectMonobank);
+bankRouter.get("/getStatement", authMiddleware, bankController.getStatement);

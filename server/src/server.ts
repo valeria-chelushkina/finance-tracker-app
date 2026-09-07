@@ -1,7 +1,7 @@
 import express, { Application } from "express";
 import cookieParser from "cookie-parser";
-import userRouter from "@server/modules/user/user.routes.js";
-import authRouter from "@server/modules/auth/auth.routes.js";
+import {userRouter} from "@server/modules/user/user.routes.js";
+import {authRouter} from "@server/modules/auth/auth.routes.js";
 import { bankRouter } from "@server/modules/bank/bank.routes.js";
 import { getEnvOrThrow } from "@server/utils/getEnvOrThrow.js";
 import { errorMiddleware } from "@server/middlewares/errorMiddleware.js";

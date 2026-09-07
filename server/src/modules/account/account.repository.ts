@@ -1,7 +1,8 @@
 import type {
   Account,
+  CreateAccount,
   UpdateAccount,
-} from "@server/modules/account/account.module.js";
+} from "@server/types/modules/accountTypes.js";
 import { accounts } from "@server/modules/account/account.module.js";
 import { db, DbClient } from "@server/database/databaseClient.js";
 import { eq } from "drizzle-orm";
@@ -10,13 +11,14 @@ import { BaseRepository } from "@server/modules/base/base.repository.js";
 export class AccountRepository extends BaseRepository<
   typeof accounts,
   Account,
+  CreateAccount,
   UpdateAccount
 > {
   constructor(dbClient: DbClient = db) {
     super(accounts, dbClient);
   }
 
-  async createAccount(payload: Omit<Account, "id">): Promise<Account> {
+  async createAccount(payload: CreateAccount): Promise<Account> {
     return this.create(payload);
   }
 
@@ -30,7 +32,7 @@ export class AccountRepository extends BaseRepository<
 
   async updateAccount(
     id: number,
-    updatedFields: Partial<UpdateAccount>,
+    updatedFields: UpdateAccount,
   ): Promise<Account | null> {
     return this.update(id, updatedFields);
   }

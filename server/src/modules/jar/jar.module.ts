@@ -27,6 +27,3 @@ export const jars = pgTable(
   },
   () => [isoCurrencyCheck("jars")],
 );
-
-export type Jar = typeof jars.$inferSelect;
-export type UpdateJar = Partial<Omit<typeof jars.$inferInsert, "userId">>;

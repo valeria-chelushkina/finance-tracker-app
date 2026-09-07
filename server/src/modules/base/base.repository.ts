@@ -5,7 +5,8 @@ import { db, DbClient } from "@server/database/databaseClient.js";
 export abstract class BaseRepository<
   TTable extends PgTable & { id: PgColumn<any>; userId?: PgColumn<any> },
   TSelect = InferSelectModel<TTable>,
-  TInsert = InferInsertModel<TTable>,
+  TCreate extends Record<string, any> = InferInsertModel<TTable>,
+  TInsert extends Record<string, any> = Partial<InferInsertModel<TTable>>,
 > {
   protected readonly dbClient: DbClient;
   protected readonly table: TTable;
@@ -15,10 +16,10 @@ export abstract class BaseRepository<
     this.dbClient = dbClient;
   }
 
-  async create(payload: Omit<TSelect, "id">): Promise<TSelect> {
+  async create(payload: TCreate): Promise<TSelect> {
     const [newEntry] = await this.dbClient
       .insert(this.table as PgTable)
-      .values(payload as Omit<TSelect, "id">)
+      .values(payload)
       .returning();
     return newEntry as TSelect;
   }
@@ -42,11 +43,11 @@ export abstract class BaseRepository<
 
   async update(
     id: number,
-    updatedFields: Partial<TInsert>,
+    updatedFields: TInsert,
   ): Promise<TSelect | null> {
     const updatedEntry = await this.dbClient
       .update(this.table)
-      .set(updatedFields as any)
+      .set(updatedFields)
       .where(eq(this.table.id, id))
       .returning();
     return (updatedEntry as TSelect[])[0] || null;

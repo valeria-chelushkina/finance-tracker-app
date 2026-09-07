@@ -2,7 +2,7 @@ import { Router } from "express";
 import { AuthController } from "@server/modules/auth/auth.controller.js";
 import { authMiddleware } from "@server/middlewares/authMiddleware.js";
 
-const authRouter = Router();
+export const authRouter = Router();
 const authController = new AuthController();
 
 authRouter.post("/login", authController.login);
@@ -14,5 +14,3 @@ authRouter.patch(
   authMiddleware,
   authController.resetPassword,
 );
-
-export default authRouter;

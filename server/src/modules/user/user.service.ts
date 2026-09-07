@@ -1,5 +1,5 @@
 import { UserRepository } from "@server/modules/user/user.repository.js";
-import type { User, UpdateUser } from "@server/modules/user/user.module.js";
+import type { User, UpdateUser } from "@server/types/modules/userTypes.js";
 import { NotFoundError, ValidationError } from "@server/errors/AppErrors.js";
 
 export class UserService {

@@ -30,12 +30,12 @@ export type MonobankClientInfo = {
 
 export type MonobankStatementParameters = {
   account: string;
-  from: string;
-  to?: string;
+  from: number;
+  to?: number;
 };
 
 export type MonobankTransaction = {
-  id: string;
+  id: number;
   time: number;
   description: string;
   mcc: number;

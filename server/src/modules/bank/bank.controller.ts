@@ -14,10 +14,10 @@ export class BankController {
     res: Response,
   ) => {
     const { userToken } = req.body;
-    const userId: number = req.user!.userId;
+    const userId: number = req.user.userId;
 
     const clientInfo: MonobankClientInfo =
-      await this.bankService.connectMonobank(userToken, userId);
+      await this.bankService.getMonobankInfo(userToken, userId);
 
     res.status(200).json({
       message: "Token and client information was added successfully.",
@@ -31,10 +31,10 @@ export class BankController {
   ) => {
     const params: MonobankStatementParameters = req.body;
 
-    const userId: number = req.user!.userId;
+    const userId: number = req.user.userId;
 
     const statement: MonobankTransaction[] =
-      await this.bankService.getStatement(userId, params);
+      await this.bankService.getMonobankStatementInfo(userId, params);
 
     res.status(200).json({
       message: "Got statement successfully.",

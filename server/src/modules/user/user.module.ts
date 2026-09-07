@@ -27,10 +27,3 @@ export const users = pgTable(
   },
   (t) => [check("salary_check", sql`${t.expectedSalary} > 0`)],
 );
-
-export type User = typeof users.$inferSelect;
-
-export type UpdateUser = Partial<Omit<
-  typeof users.$inferInsert,
-  "email" | "createdAt" | "updatedAt"
->>;

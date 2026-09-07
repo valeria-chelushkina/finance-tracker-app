@@ -48,6 +48,3 @@ export const transactions = pgTable(
   },
   () => [isoCurrencyCheck("transactions")],
 );
-
-export type Transaction = typeof transactions.$inferSelect;
-export type UpdateTransaction = Partial<Omit<typeof transactions.$inferInsert, "userId">>;

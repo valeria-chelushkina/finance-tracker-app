@@ -63,8 +63,3 @@ export const accounts = pgTable(
     ),
   ],
 );
-
-export type Account = typeof accounts.$inferSelect;
-export type UpdateAccount = Partial<
-  Omit<typeof accounts.$inferInsert, "userId">
->;

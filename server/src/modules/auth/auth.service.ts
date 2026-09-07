@@ -5,12 +5,10 @@ import {
   ConflictError,
 } from "@server/errors/AppErrors.js";
 import type {
-  AuthTokens,
   ResetPasswordBody,
 } from "@server/modules/auth/typedefs.js";
 import type { UserPayload, UserInfo } from "@server/types/generalTypes.js";
 import { UserRepository } from "@server/modules/user/user.repository.js";
-import type { User } from "@server/modules/user/user.module.js";
 import jwt from "jsonwebtoken";
 import {
   TOKEN_AGES,
@@ -28,6 +26,11 @@ export type JwtCredentials = {
   secret: string;
 };
 
+export type AuthTokens = {
+  accessToken: string;
+  refreshToken: string;
+};
+
 export class AuthService {
   private readonly userRepository = new UserRepository();
 
@@ -36,7 +39,7 @@ export class AuthService {
     userPayload: UserPayload,
     tokenOptions: SignOptions,
   ): string {
-    const jwtSecret: string = tokenSecretName;
+    const jwtSecret = tokenSecretName;
     const payload: UserPayload = {
       userId: userPayload.userId,
       userEmail: userPayload.userEmail,
@@ -86,8 +89,8 @@ export class AuthService {
   }
 
   async hashPassword(password: string): Promise<string> {
-    const saltRounds: number = 10;
-    const hashed: string = await bcrypt.hash(password, saltRounds);
+    const saltRounds = 10;
+    const hashed = await bcrypt.hash(password, saltRounds);
     return hashed;
   }
 
@@ -104,20 +107,20 @@ export class AuthService {
   ): Promise<void> {
     const { oldPassword, newPassword } = resetPasswordBody;
 
-    const user: User | null = await this.userRepository.findUserById(userId);
+    const user = await this.userRepository.findUserById(userId);
     if (!user) {
       throw new AuthError(
         "User is not found in database. Cannot reset the password.",
       );
     }
-    const isPasswordCorrect: boolean = await this.verifyPassword({
+    const isPasswordCorrect = await this.verifyPassword({
       password: oldPassword,
       passwordHash: user.passwordHash,
     });
     if (!isPasswordCorrect) {
       throw new AuthError("Password is incorrect. Cannot reset the password.");
     }
-    const newPasswordHashed: string = await this.hashPassword(newPassword);
+    const newPasswordHashed = await this.hashPassword(newPassword);
     await this.userRepository.updateUser(userId, {
       passwordHash: newPasswordHashed,
     });
@@ -126,7 +129,7 @@ export class AuthService {
   async registerUser(userInfo: UserInfo): Promise<AuthTokens> {
     const { userEmail, userPassword } = userInfo;
 
-    const existingUser: User | null =
+    const existingUser =
       await this.userRepository.findUserByEmail(userEmail);
 
     if (existingUser) {
@@ -135,7 +138,7 @@ export class AuthService {
 
     const hashedPassword = await this.hashPassword(userPassword);
 
-    const newUser: User | null = await this.userRepository.createUser({
+    const newUser = await this.userRepository.createUser({
       userEmail,
       userPassword: hashedPassword,
     });
@@ -144,10 +147,10 @@ export class AuthService {
       throw new Error("Something went wrong when creating a new user.");
     }
 
-    const userId: number = Number(newUser.id);
+    const userId = newUser.id;
 
-    const accessToken: string = this.createAccessToken({ userId, userEmail });
-    const refreshToken: string = this.createRefreshToken({ userId, userEmail });
+    const accessToken = this.createAccessToken({ userId, userEmail });
+    const refreshToken = this.createRefreshToken({ userId, userEmail });
 
     return { accessToken: accessToken, refreshToken: refreshToken };
   }
@@ -155,16 +158,16 @@ export class AuthService {
   async loginUser(userInfo: UserInfo): Promise<AuthTokens> {
     const { userEmail, userPassword } = userInfo;
 
-    const existingUser: User | null =
+    const existingUser =
       await this.userRepository.findUserByEmail(userEmail);
 
     if (!existingUser) {
       throw new AuthError(`User with email ${userEmail} doesn't exist.`);
     }
 
-    const userId: number = Number(existingUser.id);
+    const userId = existingUser.id;
 
-    const isPasswordCorrect: boolean = await this.verifyPassword({
+    const isPasswordCorrect = await this.verifyPassword({
       password: userPassword,
       passwordHash: existingUser.passwordHash,
     });
@@ -173,8 +176,8 @@ export class AuthService {
       throw new AuthError(`Password is incorrect!`);
     }
 
-    const accessToken: string = this.createAccessToken({ userId, userEmail });
-    const refreshToken: string = this.createRefreshToken({ userId, userEmail });
+    const accessToken = this.createAccessToken({ userId, userEmail });
+    const refreshToken = this.createRefreshToken({ userId, userEmail });
 
     return { accessToken: accessToken, refreshToken: refreshToken };
   }
@@ -184,14 +187,14 @@ export class AuthService {
       throw new AuthError("Refresh token missing from cookies.");
     }
 
-    const decodedUser: UserPayload = this.verifyToken({
+    const decodedUser = this.verifyToken({
       token: refreshToken,
       secret: getEnvOrThrow(JWT_SECRET_NAMES.REFRESH_TOKEN),
     });
 
     const { userId, userEmail } = decodedUser;
 
-    const accessToken: string = this.createAccessToken({ userId, userEmail });
+    const accessToken = this.createAccessToken({ userId, userEmail });
 
     return accessToken;
   }

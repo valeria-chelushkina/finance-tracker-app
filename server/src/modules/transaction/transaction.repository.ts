@@ -1,14 +1,14 @@
 import type {
   Transaction,
   UpdateTransaction,
-} from "@server/modules/transaction/transaction.module.js";
+} from "@server/types/modules/transactionTypes.js";
 import { transactions } from "@server/modules/transaction/transaction.module.js";
 import { db, DbClient } from "@server/database/databaseClient.js";
-import { eq } from "drizzle-orm";
 import { BaseRepository } from "@server/modules/base/base.repository.js";
 
 export class TransactionRepository extends BaseRepository<
   typeof transactions,
+  Transaction,
   Transaction,
   UpdateTransaction
 > {
@@ -17,7 +17,7 @@ export class TransactionRepository extends BaseRepository<
   }
 
   async createTransaction(
-    payload: Omit<Transaction, "id">,
+    payload: Transaction,
   ): Promise<Transaction> {
     return this.create(payload);
   }

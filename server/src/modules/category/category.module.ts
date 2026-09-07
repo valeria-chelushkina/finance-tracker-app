@@ -33,6 +33,3 @@ export const categories = pgTable(
   },
   (t) => [unique("unique_user_category_name").on(t.userId, t.name)],
 );
-
-export type Category = typeof categories.$inferSelect;
-export type UpdateCategory = Partial<Omit<typeof categories.$inferInsert, "userId">>;

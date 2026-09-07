@@ -1,15 +1,15 @@
-import type { Jar, UpdateJar } from "@server/modules/jar/jar.module.js";
+import type { Jar, CreateJar, UpdateJar } from "@server/types/modules/jarTypes.js";
 import { jars } from "@server/modules/jar/jar.module.js";
 import { db, DbClient } from "@server/database/databaseClient.js";
 import { eq } from "drizzle-orm";
 import { BaseRepository } from "@server/modules/base/base.repository.js";
 
-export class JarRepository extends BaseRepository<typeof jars, Jar, UpdateJar> {
+export class JarRepository extends BaseRepository<typeof jars, Jar, CreateJar, UpdateJar> {
   constructor(dbClient: DbClient = db) {
     super(jars, dbClient);
   }
 
-  async createJar(payload: Omit<Jar, "id">): Promise<Jar> {
+  async createJar(payload: CreateJar): Promise<Jar> {
     return this.create(payload);
   }
 
