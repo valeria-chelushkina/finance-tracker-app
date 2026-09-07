@@ -1,4 +1,5 @@
 import { UserService } from "@server/modules/user/user.service.js";
+import { UserRepository } from "@server/modules/user/user.repository.js";
 import { Request, Response } from "express";
 import type { User, UpdateUser } from "@server/modules/user/user.module.js";
 import {
@@ -9,11 +10,12 @@ import {
 
 export class UserController {
   private readonly userService = new UserService();
+  private readonly userRepository = new UserRepository();
 
-  findUserById = async (req: Request, res: Response) => {
-    const userId: number = req.user!.userId;
+  getUserById = async (req: Request, res: Response) => {
+    const userId: number = req.user.userId;
 
-    const user: User = await this.userService.findUserById(userId);
+    const user: User = await this.userService.getUserById(userId);
     res.status(200).json(user);
   };
 
@@ -23,14 +25,14 @@ export class UserController {
     res: Response,
   ) => {
     const userPayload: UpdateUser = req.body || {};
-    const userId: number = req.user!.userId;
+    const userId: number = req.user.userId;
 
     const user: User = await this.userService.updateUser(userId, userPayload);
     res.status(200).json(user);
   };
 
   deleteUserById = async (req: Request, res: Response) => {
-    const userId: number = req.user!.userId;
+    const userId: number = req.user.userId;
 
     await this.userService.deleteUser(userId);
     res.clearCookie(COOKIE_NAMES.ACCESS_TOKEN, cookieAccessOptions);

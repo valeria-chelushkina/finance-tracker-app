@@ -25,7 +25,7 @@ export const paymentTypesEnum = pgEnum(
 export const transactions = pgTable(
   "transactions",
   {
-    id: integer().primaryKey().generatedAlwaysAsIdentity(),
+    id: integer().primaryKey().generatedByDefaultAsIdentity(),
     userId: integer("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
@@ -34,7 +34,6 @@ export const transactions = pgTable(
     accountId: integer("account_id").references(() => accounts.id, {
       onDelete: "cascade",
     }),
-    transactionId: varchar("transaction_id", { length: 255 }).unique(),
     transactionTime: timestamp("transaction_time"),
     description: varchar({ length: 255 }),
     category: integer().references(() => categories.id, {
