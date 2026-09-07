@@ -2,71 +2,43 @@ import type { Transaction, UpdateTransaction } from "@server/modules/transaction
 import { transactions } from "@server/modules/transaction/transaction.module.js";
 import { db, DbClient } from "@server/database/databaseClient.js";
 import { eq } from "drizzle-orm";
+import { BaseRepository } from "@server/modules/base/base.repository.js";
 
-export class TransactionRepository {
-  private readonly dbClient: DbClient;
+export class TransactionRepository extends BaseRepository<typeof transactions, Transaction, UpdateTransaction> {
 
   constructor(dbClient: DbClient = db) {
-    this.dbClient = dbClient;
+    super(transactions, dbClient)
   }
 
   async createTransaction(payload: Omit<Transaction, "id">): Promise<Transaction> {
-    const [newTransaction] = await this.dbClient
-      .insert(transactions)
-      .values(payload)
-      .returning();
-    return newTransaction;
-  }
-
-  async findTransactionByTransactionId(transactionId: string): Promise<Transaction | null> {
-    const transaction = await this.dbClient
-      .select()
-      .from(transactions)
-      .where(eq(transactions.transactionId, transactionId))
-      .limit(1);
-    return transaction[0] || null;
+    return this.create(payload);
   }
 
   async findTransactionById(id: number): Promise<Transaction | null> {
-    const transaction = await this.dbClient
-      .select()
-      .from(transactions)
-      .where(eq(transactions.id, id))
-      .limit(1);
-    return transaction[0] || null;
+    return this.findById(id);
   }
 
   async findTransactionsByUserId(id: number): Promise<Transaction[]> {
-    const userTransactions = await this.dbClient
-      .select()
-      .from(transactions)
-      .where(eq(transactions.userId, id));
-
-    return userTransactions;
+    return this.findByUserId(id);
   }
 
   async updateTransaction(
     id: number,
     updatedFields: Partial<UpdateTransaction>,
   ): Promise<Transaction | null> {
-    const [updatedTransaction] = await this.dbClient
-      .update(transactions)
-      .set(updatedFields)
-      .where(eq(transactions.id, id))
-      .returning();
-    return updatedTransaction || null;
+    return this.update(id, updatedFields);
   }
 
   async deleteTransaction(id: number): Promise<boolean> {
-    const deletedTransaction = await this.dbClient
-      .delete(transactions)
-      .where(eq(transactions.id, id))
-      .returning({ id: transactions.id });
+    return this.delete(id);
+  }
 
-    if (deletedTransaction.length > 0) {
-      return true;
-    }
-
-    return false;
+    async findTransactionByTransactionId(transactionId: string): Promise<Transaction | null> {
+    const transaction = await this.dbClient
+      .select()
+      .from(transactions)
+      .where(eq(transactions.transactionId, transactionId))
+      .limit(1);
+    return transaction[0] || null;
   }
 }

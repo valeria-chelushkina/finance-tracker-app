@@ -9,7 +9,7 @@ import type { Account } from "@server/modules/account/account.module.js";
 import {
   encryptToken,
   decryptToken,
-} from "@server/utils/encryptDecryptToken.js";
+} from "@server/utils/encryptUtils.js";
 import {
   AuthError,
   ValidationError,

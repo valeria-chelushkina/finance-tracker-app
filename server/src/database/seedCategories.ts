@@ -1,5 +1,5 @@
 import { drizzle } from "drizzle-orm/node-postgres";
-import { DATABASE_URL } from "@server/database/db.consts.js";
+import { DATABASE_URL } from "@server/database/constants.js";
 import { categories } from "@server/modules/category/category.module.js";
 import { sql } from "drizzle-orm";
 

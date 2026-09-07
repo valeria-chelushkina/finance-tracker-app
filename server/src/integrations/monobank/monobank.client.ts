@@ -9,8 +9,9 @@ import {
   AuthError,
 } from "@server/errors/AppErrors.js";
 
+const BASE_URL = "https://api.monobank.ua/personal";
+
 export class MonobankClient {
-  private readonly baseURL = "https://api.monobank.ua/personal";
 
   private async parseErrorText(response: Response): Promise<string> {
     const errText: string = await response.text();
@@ -61,7 +62,7 @@ export class MonobankClient {
   }
 
   async getClientInfo(userToken: string): Promise<MonobankClientInfo> {
-    const requestUrl: string = this.baseURL + "/client-info";
+    const requestUrl: string = BASE_URL + "/client-info";
 
     const data: MonobankClientInfo = await this.getApiResponse(
       userToken,
@@ -75,7 +76,7 @@ export class MonobankClient {
     userToken: string,
     params: MonobankStatementParameters,
   ): Promise<MonobankTransaction[]> {
-    const requestUrl = `${this.baseURL}/statement/${params.account}/${params.from}/${params.to ? params.to : ""}`;
+    const requestUrl = `${BASE_URL}/statement/${params.account}/${params.from}/${params.to ? params.to : ""}`;
 
     const data: MonobankTransaction[] = await this.getApiResponse(
       userToken,

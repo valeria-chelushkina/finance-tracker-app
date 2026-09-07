@@ -1,5 +1,5 @@
 import { drizzle } from "drizzle-orm/node-postgres";
-import { DATABASE_URL } from "@server/database/db.consts.js";
+import { DATABASE_URL } from "@server/database/constants.js";
 
 const dbUrl = DATABASE_URL;
 
