@@ -6,11 +6,15 @@ import type {
   MonobankTransaction,
 } from "@server/types/monobankTypes.js";
 
+type ConnectMonobankBodyParameters = {
+  userToken: string;
+};
+
 export class BankController {
   private readonly bankService = new BankService();
 
   connectMonobank = async (
-    req: Request<unknown, unknown, { userToken: string }>,
+    req: Request<unknown, unknown, ConnectMonobankBodyParameters>,
     res: Response,
   ) => {
     const { userToken } = req.body;

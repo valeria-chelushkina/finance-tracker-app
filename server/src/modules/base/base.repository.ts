@@ -1,6 +1,12 @@
 import { PgTable, PgColumn } from "drizzle-orm/pg-core";
-import { eq, type InferSelectModel, type InferInsertModel } from "drizzle-orm";
+import {
+  eq,
+  and,
+  type InferSelectModel,
+  type InferInsertModel,
+} from "drizzle-orm";
 import { db, DbClient } from "@server/database/databaseClient.js";
+import {AppError} from "@server/errors/AppErrors.js";
 
 export abstract class BaseRepository<
   TTable extends PgTable & { id: PgColumn<any>; userId?: PgColumn<any> },
@@ -33,6 +39,15 @@ export abstract class BaseRepository<
     return (result as TSelect) || null;
   }
 
+  async findByIdAndUserId(id: number, userId: number): Promise<TSelect | null> {
+    const [result] = await this.dbClient
+      .select()
+      .from(this.table as PgTable)
+      .where(and(eq(this.table.id, id), eq(this.table.userId!, userId)))
+      .limit(1);
+    return (result as TSelect) || null;
+  }
+
   async findByUserId(userId: number): Promise<TSelect[]> {
     const result = await this.dbClient
       .select()
@@ -43,22 +58,26 @@ export abstract class BaseRepository<
 
   async update(
     id: number,
+    userId: number,
     updatedFields: TInsert,
   ): Promise<TSelect | null> {
+    // Guard against undefined/null or empty payloads
+  if (!updatedFields || Object.keys(updatedFields).length === 0) {
+    throw new AppError("No fields provided for update.", 400);
+  }
     const updatedEntry = await this.dbClient
       .update(this.table)
       .set(updatedFields)
-      .where(eq(this.table.id, id))
+      .where(and(eq(this.table.id, id), eq(this.table.userId!, userId)))
       .returning();
     return (updatedEntry as TSelect[])[0] || null;
   }
 
-  async delete(id: number): Promise<boolean> {
+  async delete(id: number, userId: number): Promise<boolean> {
     const deletedEntry = await this.dbClient
       .delete(this.table)
-      .where(eq(this.table.id, id))
+      .where(and(eq(this.table.id, id), eq(this.table.userId!, userId)))
       .returning({ id: this.table.id });
-    if (deletedEntry.length > 0) return true;
-    return false;
+    return deletedEntry.length > 0;
   }
 }

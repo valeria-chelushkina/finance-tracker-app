@@ -1,19 +1,16 @@
 import { AccountService } from "@server/modules/account/account.service.js";
-import { AccountRepository } from "@server/modules/account/account.repository.js";
 import { JarService } from "@server/modules/jar/jar.service.js";
 import { UserService } from "@server/modules/user/user.service.js";
 import { CategoryService } from "@server/modules/category/category.service.js";
 import { TransactionService } from "@server/modules/transaction/transaction.service.js";
 import { MonobankClient } from "@server/integrations/monobank/monobank.client.js";
 import { BankProviders, PaymentTypes } from "@server/types/dbEnums.js";
-import type { Account } from "@server/types/modules/accountTypes.js";
+import type {
+  Account,
+  CreateAccount,
+} from "@server/types/modules/accountTypes.js";
 import { encryptToken, decryptToken } from "@server/utils/encryptUtils.js";
-import {
-  AuthError,
-  ConflictError,
-  NotFoundError,
-} from "@server/errors/AppErrors.js";
-import { ErrorMessages } from "@server/errors/errorMessages.js";
+import { AuthError, ConflictError } from "@server/errors/AppErrors.js";
 import type {
   MonobankStatementParameters,
   MonobankTransaction,
@@ -21,18 +18,20 @@ import type {
   MonobankAccount,
   MonobankJar,
 } from "@server/types/monobankTypes.js";
-import { Jar } from "@server/types/modules/jarTypes.js";
-import { Transaction } from "@server/types/modules/transactionTypes.js";
+import type { Jar, CreateJar } from "@server/types/modules/jarTypes.js";
+import type {
+  Transaction,
+  CreateTransaction,
+} from "@server/types/modules/transactionTypes.js";
 import { validateStatementTimeRange } from "@server/helpers/monobankValidationHelpers.js";
 
 type TransactionFetchedInfo = {
   category: number;
-  accountId: number;
+  accountId: string;
 };
 
 export class BankService {
   private readonly accountService = new AccountService();
-  private readonly accountRepository = new AccountRepository();
   private readonly jarService = new JarService();
   private readonly userService = new UserService();
   private readonly categoryService = new CategoryService();
@@ -49,20 +48,20 @@ export class BankService {
 
     const userAccounts = clientInfo.accounts;
 
-    await this.createEntriesTemplate<MonobankAccount, Account>(
+    await this.createEntriesTemplate<MonobankAccount, CreateAccount, Account>(
       userId,
       userAccounts,
       this.mapToAccount,
-      this.accountService.createAccount,
+      (entry) => this.accountService.createAccount(entry),
     );
 
     const userJars = clientInfo.jars;
 
-    await this.createEntriesTemplate<MonobankJar, Jar>(
+    await this.createEntriesTemplate<MonobankJar, CreateJar, Jar>(
       userId,
       userJars,
       this.mapToJar,
-      this.jarService.createJar,
+      (entry) => this.jarService.createJar(entry),
     );
 
     return clientInfo;
@@ -76,16 +75,20 @@ export class BankService {
 
     const userToken = await this.decryptUserToken(userId);
 
-    const transactions = await this.monobankClient.getStatement(
+    const transactions = await this.monobankClient.getClientStatement(
       userToken,
       params,
     );
 
-    await this.createEntriesTemplate<MonobankTransaction, Transaction>(
+    await this.createEntriesTemplate<
+      MonobankTransaction,
+      CreateTransaction,
+      Transaction
+    >(
       userId,
       transactions,
       this.mapToTransaction,
-      this.transactionService.createTransaction,
+      (entry) => this.transactionService.createTransaction(entry),
       parseInt(params.account),
     );
 
@@ -118,15 +121,15 @@ export class BankService {
     return decryptToken(encryptedUserToken);
   }
 
-  private async createEntriesTemplate<T, TFull>(
+  private async createEntriesTemplate<T, TCreate, TReturn = TCreate>(
     userId: number,
     entries: T[],
     fillCallback: (
       userId: number,
       entry: T,
       account?: number,
-    ) => Promise<TFull> | TFull,
-    createCallback: (fullEntry: TFull) => Promise<TFull>,
+    ) => Promise<TCreate> | TCreate,
+    createCallback: (fullEntry: TCreate) => Promise<TReturn>,
     account?: number,
   ) {
     if (entries.length > 0) {
@@ -200,13 +203,7 @@ export class BankService {
 
     const transactionCategoryId = transactionByMcc.id;
 
-    const userAccount = await this.accountRepository.findAccountById(account);
-
-    if (!userAccount) {
-      throw new NotFoundError(
-        ErrorMessages.notFoundByField("account", "card ID", account),
-      );
-    }
+    const userAccount = await this.accountService.getAccountById(account);
 
     const userAccountId = userAccount.id;
 
@@ -221,14 +218,8 @@ export class BankService {
   private async validateAccountOwnership(
     cardId: number,
     userId: number,
-  ): Promise<number> {
-    const account = await this.accountRepository.findAccountById(cardId);
-
-    if (!account) {
-      throw new NotFoundError(
-        ErrorMessages.notFoundByField("account", "card ID", cardId),
-      );
-    }
+  ): Promise<string> {
+    const account = await this.accountService.getAccountById(cardId);
 
     if (account.userId !== userId) {
       throw new AuthError("No access to this information.");

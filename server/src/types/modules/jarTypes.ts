@@ -2,4 +2,9 @@ import { jars } from "@server/modules/jar/jar.module.js";
 
 export type Jar = typeof jars.$inferSelect;
 
-export type UpdateJar = Partial<Omit<typeof jars.$inferInsert, "userId">>;
+export type CreateJar = typeof jars.$inferInsert;
+
+export type CreateJarBody = Omit<CreateJar, "userId" | "id">;
+
+export type UpdateJar = Partial<Omit<typeof jars.$inferInsert, "userId" | "id" >>;
+

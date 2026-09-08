@@ -9,6 +9,7 @@ import {
   timestamp,
   doublePrecision,
   pgEnum,
+  text
 } from "drizzle-orm/pg-core";
 import { users } from "@server/modules/user/user.module.js";
 import { accounts } from "@server/modules/account/account.module.js";
@@ -25,13 +26,15 @@ export const paymentTypesEnum = pgEnum(
 export const transactions = pgTable(
   "transactions",
   {
-    id: integer().primaryKey().generatedByDefaultAsIdentity(),
+    id: text()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
     userId: integer("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     paymentType: paymentTypesEnum().default(PaymentTypes.Card),
     balance: doublePrecision().notNull(),
-    accountId: integer("account_id").references(() => accounts.id, {
+    accountId: text("account_id").references(() => accounts.id, {
       onDelete: "cascade",
     }),
     transactionTime: timestamp("transaction_time"),

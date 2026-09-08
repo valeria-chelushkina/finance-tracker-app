@@ -5,25 +5,25 @@ import type {
 } from "@server/types/modules/categoryTypes.js";
 import { AppError, NotFoundError } from "@server/errors/AppErrors.js";
 import { ErrorMessages } from "@server/errors/errorMessages.js";
+import { BaseService } from "@server/modules/base/base.service.js";
 
-export class CategoryService {
-  private readonly categoryRepository = new CategoryRepository();
+export class CategoryService extends BaseService<
+  Category,
+  CreateCategory,
+  CategoryRepository
+> {
+  constructor() {
+    super(new CategoryRepository(), "category");
+  }
 
   async createCategory(payload: CreateCategory): Promise<Category> {
-    const newCategory = await this.categoryRepository.createCategory(payload);
-    if (!newCategory) {
-      throw new AppError(
-        ErrorMessages.createFailed('category'),
-        500,
-      );
-    }
-    return newCategory;
+    return this.create(payload);
   }
 
   async getCategoryByMcc(mcc: number, originalMcc: number): Promise<Category> {
-    const categoryMcc = await this.categoryRepository.findCategoryByMcc(mcc);
+    const categoryMcc = await this.repository.findCategoryByMcc(mcc);
     const categoryOriginalMcc =
-      await this.categoryRepository.findCategoryByMcc(originalMcc);
+      await this.repository.findCategoryByMcc(originalMcc);
 
     if (!categoryMcc && !categoryOriginalMcc) {
       throw new NotFoundError(

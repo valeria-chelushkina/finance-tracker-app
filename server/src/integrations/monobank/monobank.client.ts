@@ -15,11 +15,10 @@ export class MonobankClient {
 
   private async parseErrorText(response: Response): Promise<string> {
     const errText: string = await response.text();
-    let errorMessage = errText;
 
     try {
       const parsed = JSON.parse(errText);
-      return (errorMessage = parsed.errorDescription || errText);
+      return (parsed.errorDescription || errText);
     } catch {
       return errText;
     }
@@ -72,7 +71,7 @@ export class MonobankClient {
     return data;
   }
 
-  async getStatement(
+  async getClientStatement(
     userToken: string,
     params: MonobankStatementParameters,
   ): Promise<MonobankTransaction[]> {

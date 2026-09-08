@@ -30,15 +30,22 @@ export class CategoryRepository extends BaseRepository<
     return this.findByUserId(id);
   }
 
+  async findCategoryByIdAndUserId(
+    id: number,
+    userId: number,
+  ): Promise<Category | null> {
+    return this.findByIdAndUserId(id, userId);
+  }
   async updateCategory(
     id: number,
+    userId: number,
     updatedFields: UpdateCategory,
   ): Promise<Category | null> {
-    return this.update(id, updatedFields);
+    return this.update(id, userId, updatedFields);
   }
 
-  async deleteCategory(id: number): Promise<boolean> {
-    return this.delete(id);
+  async deleteCategory(id: number, userId: number): Promise<boolean> {
+    return this.delete(id, userId);
   }
 
   async findCategoryByMcc(mcc: number): Promise<Category | null> {

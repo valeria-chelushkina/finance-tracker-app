@@ -10,6 +10,7 @@ import {
   doublePrecision,
   pgEnum,
   check,
+  text,
 } from "drizzle-orm/pg-core";
 import { users } from "@server/modules/user/user.module.js";
 import {
@@ -37,7 +38,9 @@ export const typesEnum = pgEnum(
 export const accounts = pgTable(
   "accounts",
   {
-    id: integer().primaryKey().generatedAlwaysAsIdentity(),
+    id: text()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
     userId: integer("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),

@@ -7,13 +7,16 @@ import {
   pgTable,
   varchar,
   doublePrecision,
+  text,
 } from "drizzle-orm/pg-core";
 import { users } from "@server/modules/user/user.module.js";
 
 export const jars = pgTable(
   "jars",
   {
-    id: integer().primaryKey().generatedByDefaultAsIdentity(),
+    id: text()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
     userId: integer("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
