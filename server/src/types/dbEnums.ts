@@ -1,5 +1,3 @@
-import {pgEnum} from "drizzle-orm/pg-core";
-
 export enum BankProviders {
   Monobank = "monobank",
   // to be added? - PrivatBank is in plans

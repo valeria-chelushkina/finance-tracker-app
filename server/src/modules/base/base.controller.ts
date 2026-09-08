@@ -24,10 +24,10 @@ export abstract class BaseController<
   protected readonly service: TService;
   protected readonly entityName: string;
 
-  constructor(repository: TRepository, service: TService, entityName: string) {
+  constructor(repository: TRepository, service: TService) {
     this.repository = repository;
     this.service = service;
-    this.entityName = entityName;
+    this.entityName = service.entityName;
   }
 
   protected create = async (
@@ -79,9 +79,7 @@ export abstract class BaseController<
       updatedFields,
     );
     if (!updatedEntity) {
-      throw new NotFoundError(
-        ErrorMessages.notFoundByField(this.entityName, "ID", id),
-      );
+      throw new NotFoundError(ErrorMessages.notFoundById(this.entityName, id));
     }
     res.status(200).json({
       [`updated ${this.entityName}`]: updatedEntity,

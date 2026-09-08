@@ -15,7 +15,7 @@ export class JarController extends BaseController<
   JarService
 > {
   constructor(service = new JarService()) {
-    super(service.repository, service, "jar");
+    super(service.repository, service);
   }
 
   createJar = this.create;

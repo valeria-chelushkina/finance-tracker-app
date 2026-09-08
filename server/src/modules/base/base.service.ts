@@ -13,7 +13,7 @@ export abstract class BaseService<
   TRepository extends BaseRepository<any, TSelect, TCreate, any>,
 > {
   readonly repository: TRepository;
-  protected readonly entityName: string;
+  readonly entityName: string;
 
   constructor(repository: TRepository, name: string) {
     this.repository = repository;

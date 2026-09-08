@@ -15,7 +15,7 @@ export class CategoryController extends BaseController<
   CategoryService
 > {
   constructor(service = new CategoryService()) {
-    super(service.repository, service, "category");
+    super(service.repository, service);
   }
 
   createCategory = this.create;

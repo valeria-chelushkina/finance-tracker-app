@@ -5,6 +5,7 @@ import type {
 } from "@server/types/modules/categoryTypes.js";
 import { NotFoundError } from "@server/errors/AppErrors.js";
 import { ErrorMessages } from "@server/errors/errorMessages.js";
+import { Entities } from "@server/types/entitiesEnum.js";
 import { BaseService } from "@server/modules/base/base.service.js";
 
 export class CategoryService extends BaseService<
@@ -13,7 +14,7 @@ export class CategoryService extends BaseService<
   CategoryRepository
 > {
   constructor() {
-    super(new CategoryRepository(), "category");
+    super(new CategoryRepository(), Entities.Category);
   }
 
   async getCategoryByMcc(mcc: number, originalMcc: number): Promise<Category> {
@@ -23,7 +24,7 @@ export class CategoryService extends BaseService<
 
     if (!categoryMcc && !categoryOriginalMcc) {
       throw new NotFoundError(
-        ErrorMessages.notFoundByField("category", "mcc code"),
+        ErrorMessages.notFoundByField(this.entityName, "mcc code"),
       );
     }
 

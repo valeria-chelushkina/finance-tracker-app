@@ -3,10 +3,9 @@ import type {
   Account,
   CreateAccount,
 } from "@server/types/modules/accountTypes.js";
-import {
-  NotFoundError,
-} from "@server/errors/AppErrors.js";
+import { NotFoundError } from "@server/errors/AppErrors.js";
 import { ErrorMessages } from "@server/errors/errorMessages.js";
+import { Entities } from "@server/types/entitiesEnum.js";
 import { BaseService } from "@server/modules/base/base.service.js";
 
 export class AccountService extends BaseService<
@@ -15,7 +14,7 @@ export class AccountService extends BaseService<
   AccountRepository
 > {
   constructor() {
-    super(new AccountRepository(), "account");
+    super(new AccountRepository(), Entities.Account);
   }
 
   async createAccount(payload: CreateAccount): Promise<Account> {
@@ -29,7 +28,7 @@ export class AccountService extends BaseService<
 
     if (!account) {
       throw new NotFoundError(
-        ErrorMessages.notFoundByField("account", "card ID", id),
+        ErrorMessages.notFoundByField(this.entityName, "card ID", id),
       );
     }
     return account;

@@ -4,6 +4,7 @@ import type {
   CreateTransaction,
 } from "@server/types/modules/transactionTypes.js";
 import { BaseService } from "@server/modules/base/base.service.js";
+import { Entities } from "@server/types/entitiesEnum.js";
 
 export class TransactionService extends BaseService<
   Transaction,
@@ -11,7 +12,7 @@ export class TransactionService extends BaseService<
   TransactionRepository
 > {
   constructor() {
-    super(new TransactionRepository(), "transaction");
+    super(new TransactionRepository(), Entities.Transaction);
   }
 
   async createTransaction(payload: CreateTransaction): Promise<Transaction> {

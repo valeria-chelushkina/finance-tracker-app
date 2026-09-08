@@ -6,6 +6,7 @@ import {
   ConflictError,
 } from "@server/errors/AppErrors.js";
 import {ErrorMessages} from "@server/errors/errorMessages.js";
+import {Entities} from "@server/types/entitiesEnum.js";
 import type {
   ResetPasswordBody,
 } from "@server/modules/auth/typedefs.js";
@@ -135,7 +136,7 @@ export class AuthService {
       await this.userRepository.findUserByEmail(userEmail);
 
     if (existingUser) {
-      throw new ConflictError(ErrorMessages.alreadyExists("user", `email: ${userEmail}`));
+      throw new ConflictError(ErrorMessages.alreadyExists(Entities.User, `email: ${userEmail}`));
     }
 
     const hashedPassword = await this.hashPassword(userPassword);
@@ -146,7 +147,7 @@ export class AuthService {
     });
 
     if (!newUser) {
-      throw new AppError(ErrorMessages.createFailed("user"), 500);
+      throw new AppError(ErrorMessages.createFailed(Entities.User), 500);
     }
 
     const userId = newUser.id;
