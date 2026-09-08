@@ -27,7 +27,7 @@ export const authMiddleware = (
       secret: getEnvOrThrow(JWT_SECRET_NAMES.ACCESS_TOKEN),
     });
 
-    req.user! = decodedUser;
+    req.user = decodedUser;
 
     next();
   } catch (err: unknown) {

@@ -1,6 +1,6 @@
 import { AuthService } from "@server/modules/auth/auth.service.js";
 import { Request, Response } from "express";
-import type { AuthTokens, ResetPasswordBody } from "@server/modules/auth/typedefs.js";
+import type { ResetPasswordBody } from "@server/modules/auth/typedefs.js";
 import type { UserInfo } from "@server/types/generalTypes.js";
 import {
   COOKIE_NAMES,
@@ -17,7 +17,7 @@ export class AuthController {
   ) => {
     const { userEmail, userPassword } = req.body;
 
-    const userTokens: AuthTokens = await this.authService.registerUser({
+    const userTokens = await this.authService.registerUser({
       userEmail,
       userPassword,
     });
@@ -41,7 +41,7 @@ export class AuthController {
   login = async (req: Request<unknown, unknown, UserInfo>, res: Response) => {
     const { userEmail, userPassword } = req.body;
 
-    const userTokens: AuthTokens = await this.authService.loginUser({
+    const userTokens = await this.authService.loginUser({
       userEmail,
       userPassword,
     });
@@ -70,11 +70,9 @@ export class AuthController {
       res.clearCookie(COOKIE_NAMES.REFRESH_TOKEN, cookieRefreshOptions);
     }
 
-    const accessToken: string = this.authService.refreshToken(refreshToken);
+    const accessToken = this.authService.refreshToken(refreshToken);
 
-    if (accessToken) {
-      res.cookie(COOKIE_NAMES.ACCESS_TOKEN, accessToken, cookieAccessOptions);
-    }
+    res.cookie(COOKIE_NAMES.ACCESS_TOKEN, accessToken, cookieAccessOptions);
 
     res.status(200).json({ message: "Access token has been refreshed." });
   };
@@ -89,7 +87,7 @@ export class AuthController {
     req: Request<unknown, unknown, ResetPasswordBody>,
     res: Response,
   ) => {
-    const userId: number = req.user!.userId;
+    const userId = req.user.userId;
 
     const { oldPassword, newPassword } = req.body;
 

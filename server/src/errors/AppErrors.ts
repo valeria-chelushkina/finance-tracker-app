@@ -5,7 +5,7 @@ export class AppError extends Error {
     this.name = this.constructor.name;
     this.status = status;
     Error.captureStackTrace(this, this.constructor);
-    Object.setPrototypeOf(this, AppError.prototype);
+    Object.setPrototypeOf(this, new.target.prototype);
   }
 }
 

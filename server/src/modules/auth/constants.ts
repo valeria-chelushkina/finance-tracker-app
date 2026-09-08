@@ -2,8 +2,8 @@ import { CookieOptions } from "express";
 import { getEnvOrThrow } from "@server/utils/getEnvOrThrow.js";
 
 export const TOKEN_AGES = {
-  ACCESS_TOKEN_AGE: 10 * 60 * 1000,
-  REFRESH_TOKEN_AGE: 3 * 30 * 24 * 60 * 60 * 1000,
+  ACCESS_TOKEN_AGE: 10 * 60,
+  REFRESH_TOKEN_AGE: 3 * 30 * 24 * 60 * 60,
 };
 export const COOKIE_NAMES = {
   ACCESS_TOKEN: "accessToken",
