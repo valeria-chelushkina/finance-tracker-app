@@ -17,7 +17,7 @@ export class AccountRepository extends BaseRepository<
     super(accounts, dbClient);
   }
 
-  async findAccountById(id: number): Promise<Account | null> {
+  async findAccountById(id: string | number): Promise<Account | null> {
     return this.findById(id);
   }
 }

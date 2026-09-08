@@ -89,7 +89,7 @@ export class BankService {
       transactions,
       this.mapToTransaction,
       (entry) => this.transactionService.createTransaction(entry),
-      parseInt(params.account),
+      params.account,
     );
 
     return transactions;
@@ -127,10 +127,10 @@ export class BankService {
     fillCallback: (
       userId: number,
       entry: T,
-      account?: number,
+      account?: string,
     ) => Promise<TCreate> | TCreate,
     createCallback: (fullEntry: TCreate) => Promise<TReturn>,
-    account?: number,
+    account?: string,
   ) {
     if (entries.length > 0) {
       for (const entry of entries) {
@@ -148,30 +148,33 @@ export class BankService {
 
   // === mapping functions ===
 
-  private mapToAccount(userId: number, account: MonobankAccount): Account {
+  private mapToAccount = (
+    userId: number,
+    account: MonobankAccount,
+  ): Account => {
     return {
       ...account,
       userId: userId,
       bankName: BankProviders.Monobank,
       balance: account.balance / 100,
     };
-  }
+  };
 
-  private mapToJar(userId: number, jar: MonobankJar): Jar {
+  private mapToJar = (userId: number, jar: MonobankJar): Jar => {
     return {
       ...jar,
       userId: userId,
       balance: jar.balance / 100,
       goal: jar.goal / 100,
     };
-  }
+  };
 
-  private async mapToTransaction(
+  private mapToTransaction = async (
     userId: number,
     transaction: MonobankTransaction,
-    account?: number,
-  ): Promise<Transaction> {
-    const targetAccount = account ?? 0;
+    account?: string,
+  ): Promise<Transaction> => {
+    const targetAccount = account ?? "0";
     const transactionFetchedInfo = await this.fetchInfoForTransaction(
       transaction,
       targetAccount,
@@ -190,11 +193,11 @@ export class BankService {
       commissionRate: transaction.commissionRate / 100,
       cashbackAmount: transaction.cashbackAmount / 100,
     };
-  }
+  };
 
   private async fetchInfoForTransaction(
     transaction: MonobankTransaction,
-    account: number,
+    account: string,
   ): Promise<TransactionFetchedInfo> {
     const transactionByMcc = await this.categoryService.getCategoryByMcc(
       transaction.mcc,
@@ -216,10 +219,10 @@ export class BankService {
   // === validate helpers ===
 
   private async validateAccountOwnership(
-    cardId: number,
+    id: string | number,
     userId: number,
   ): Promise<string> {
-    const account = await this.accountService.getAccountById(cardId);
+    const account = await this.accountService.getAccountById(id);
 
     if (account.userId !== userId) {
       throw new AuthError("No access to this information.");
@@ -233,9 +236,6 @@ export class BankService {
     currentUserId: number,
   ): Promise<void> {
     validateStatementTimeRange(params.from, params.to);
-    await this.validateAccountOwnership(
-      parseInt(params.account),
-      currentUserId,
-    );
+    this.validateAccountOwnership(params.account, currentUserId);
   }
 }

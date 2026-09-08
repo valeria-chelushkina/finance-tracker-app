@@ -23,8 +23,9 @@ export class AccountService extends BaseService<
   }
 
   // added method here cause it gets used and error check duplicates two times
-  async getAccountById(id: number): Promise<Account> {
+  async getAccountById(id: string | number): Promise<Account> {
     const account = await this.repository.findAccountById(id);
+    console.debug(account);
 
     if (!account) {
       throw new NotFoundError(
