@@ -3,10 +3,14 @@ import { BaseRepository } from "@server/modules/base/base.repository.js";
 import { BaseService } from "@server/modules/base/base.service.js";
 import { NotFoundError } from "@server/errors/AppErrors.js";
 import { ErrorMessages } from "@server/errors/errorMessages.js";
-import type {
-  BodyParameters,
-  UpdateBodyParameters,
-} from "@server/types/controllerTypes.js";
+
+export type BodyParameters = {
+  id: string | number;
+};
+
+export type UpdateBodyParameters<T> = Partial<T> & {
+  id: string | number;
+};
 
 export abstract class BaseController<
   TSelect,

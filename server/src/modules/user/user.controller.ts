@@ -1,5 +1,4 @@
 import { UserService } from "@server/modules/user/user.service.js";
-import { UserRepository } from "@server/modules/user/user.repository.js";
 import { Request, Response } from "express";
 import type { User, UpdateUser } from "@server/types/modules/userTypes.js";
 import {

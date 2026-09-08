@@ -12,7 +12,7 @@ export abstract class BaseService<
   TCreate extends Record<string, any>,
   TRepository extends BaseRepository<any, TSelect, TCreate, any>,
 > {
-  protected readonly repository: TRepository;
+  readonly repository: TRepository;
   protected readonly entityName: string;
 
   constructor(repository: TRepository, name: string) {
@@ -39,7 +39,7 @@ export abstract class BaseService<
     return newEntity;
   }
 
-  async getById(id: number): Promise<TSelect> {
+  async getById(id: string | number): Promise<TSelect> {
     const entity = await this.repository.findById(id);
 
     if (!entity) {

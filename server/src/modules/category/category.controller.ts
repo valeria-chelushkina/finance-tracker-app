@@ -1,4 +1,3 @@
-import { Request, Response } from "express";
 import {
   Category,
   CreateCategoryBody,
@@ -7,10 +6,6 @@ import {
 import { CategoryRepository } from "@server/modules/category/category.repository.js";
 import { CategoryService } from "@server/modules/category/category.service.js";
 import { BaseController } from "@server/modules/base/base.controller.js";
-import type {
-  BodyParameters,
-  UpdateBodyParameters,
-} from "@server/types/controllerTypes.js";
 
 export class CategoryController extends BaseController<
   Category,
@@ -19,32 +14,12 @@ export class CategoryController extends BaseController<
   CategoryRepository,
   CategoryService
 > {
-  constructor() {
-    super(new CategoryRepository(), new CategoryService(), "category");
+  constructor(service = new CategoryService()) {
+    super(service.repository, service, "category");
   }
 
-  createCategory = async (
-    req: Request<unknown, unknown, CreateCategoryBody>,
-    res: Response,
-  ) => {
-    return this.create(req, res);
-  };
-
-  getCategoriesByUserId = async (req: Request, res: Response) => {
-    return this.getByUserId(req, res);
-  };
-
-  updateCategory = async (
-    req: Request<unknown, unknown, UpdateBodyParameters<Category>>,
-    res: Response,
-  ) => {
-    return this.update(req, res);
-  };
-
-  deleteCategory = async (
-    req: Request<unknown, unknown, BodyParameters>,
-    res: Response,
-  ) => {
-    return this.delete(req, res);
-  };
+  createCategory = this.create;
+  getCategoriesByUserId = this.getByUserId;
+  updateCategory = this.update;
+  deleteCategory = this.delete;
 }

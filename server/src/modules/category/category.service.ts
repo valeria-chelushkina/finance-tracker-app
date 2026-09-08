@@ -3,7 +3,7 @@ import type {
   Category,
   CreateCategory,
 } from "@server/types/modules/categoryTypes.js";
-import { AppError, NotFoundError } from "@server/errors/AppErrors.js";
+import { NotFoundError } from "@server/errors/AppErrors.js";
 import { ErrorMessages } from "@server/errors/errorMessages.js";
 import { BaseService } from "@server/modules/base/base.service.js";
 
@@ -14,10 +14,6 @@ export class CategoryService extends BaseService<
 > {
   constructor() {
     super(new CategoryRepository(), "category");
-  }
-
-  async createCategory(payload: CreateCategory): Promise<Category> {
-    return this.create(payload);
   }
 
   async getCategoryByMcc(mcc: number, originalMcc: number): Promise<Category> {

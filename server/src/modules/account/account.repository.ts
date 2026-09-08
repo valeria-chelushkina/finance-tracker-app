@@ -17,34 +17,7 @@ export class AccountRepository extends BaseRepository<
     super(accounts, dbClient);
   }
 
-  async createAccount(payload: CreateAccount): Promise<Account> {
-    return this.create(payload);
-  }
-
   async findAccountById(id: number): Promise<Account | null> {
     return this.findById(id);
-  }
-
-  async findAccountByIdAndUserId(
-    id: number,
-    userId: number,
-  ): Promise<Account | null> {
-    return this.findByIdAndUserId(id, userId);
-  }
-
-  async findAccountsByUserId(id: number): Promise<Account[]> {
-    return this.findByUserId(id);
-  }
-
-  async updateAccount(
-    id: number,
-    userId: number,
-    updatedFields: UpdateAccount,
-  ): Promise<Account | null> {
-    return this.update(id, userId, updatedFields);
-  }
-
-  async deleteAccount(id: number, userId: number): Promise<boolean> {
-    return this.delete(id, userId);
   }
 }

@@ -6,7 +6,7 @@ import {
   type InferInsertModel,
 } from "drizzle-orm";
 import { db, DbClient } from "@server/database/databaseClient.js";
-import {AppError} from "@server/errors/AppErrors.js";
+import { AppError } from "@server/errors/AppErrors.js";
 
 export abstract class BaseRepository<
   TTable extends PgTable & { id: PgColumn<any>; userId?: PgColumn<any> },
@@ -30,7 +30,7 @@ export abstract class BaseRepository<
     return newEntry as TSelect;
   }
 
-  async findById(id: number): Promise<TSelect | null> {
+  async findById(id: string | number): Promise<TSelect | null> {
     const [result] = await this.dbClient
       .select()
       .from(this.table as PgTable)
@@ -39,7 +39,10 @@ export abstract class BaseRepository<
     return (result as TSelect) || null;
   }
 
-  async findByIdAndUserId(id: number, userId: number): Promise<TSelect | null> {
+  async findByIdAndUserId(
+    id: string | number,
+    userId: number,
+  ): Promise<TSelect | null> {
     const [result] = await this.dbClient
       .select()
       .from(this.table as PgTable)
@@ -57,14 +60,13 @@ export abstract class BaseRepository<
   }
 
   async update(
-    id: number,
+    id: string | number,
     userId: number,
     updatedFields: TInsert,
   ): Promise<TSelect | null> {
-    // Guard against undefined/null or empty payloads
-  if (!updatedFields || Object.keys(updatedFields).length === 0) {
-    throw new AppError("No fields provided for update.", 400);
-  }
+    if (!updatedFields) {
+      throw new AppError("No fields provided for update.", 400);
+    }
     const updatedEntry = await this.dbClient
       .update(this.table)
       .set(updatedFields)
@@ -73,7 +75,7 @@ export abstract class BaseRepository<
     return (updatedEntry as TSelect[])[0] || null;
   }
 
-  async delete(id: number, userId: number): Promise<boolean> {
+  async delete(id: string | number, userId: number): Promise<boolean> {
     const deletedEntry = await this.dbClient
       .delete(this.table)
       .where(and(eq(this.table.id, id), eq(this.table.userId!, userId)))

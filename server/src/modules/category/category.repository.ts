@@ -18,36 +18,6 @@ export class CategoryRepository extends BaseRepository<
     super(categories, dbClient);
   }
 
-  async createCategory(payload: CreateCategory): Promise<Category> {
-    return this.create(payload);
-  }
-
-  async findCategoryById(id: number): Promise<Category | null> {
-    return this.findById(id);
-  }
-
-  async findCategoriesByUserId(id: number): Promise<Category[]> {
-    return this.findByUserId(id);
-  }
-
-  async findCategoryByIdAndUserId(
-    id: number,
-    userId: number,
-  ): Promise<Category | null> {
-    return this.findByIdAndUserId(id, userId);
-  }
-  async updateCategory(
-    id: number,
-    userId: number,
-    updatedFields: UpdateCategory,
-  ): Promise<Category | null> {
-    return this.update(id, userId, updatedFields);
-  }
-
-  async deleteCategory(id: number, userId: number): Promise<boolean> {
-    return this.delete(id, userId);
-  }
-
   async findCategoryByMcc(mcc: number): Promise<Category | null> {
     const category = await this.dbClient
       .select()

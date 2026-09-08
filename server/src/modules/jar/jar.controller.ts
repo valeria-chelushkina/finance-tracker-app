@@ -1,4 +1,3 @@
-import { Request, Response } from "express";
 import {
   Jar,
   CreateJarBody,
@@ -7,10 +6,6 @@ import {
 import { JarRepository } from "@server/modules/jar/jar.repository.js";
 import { JarService } from "@server/modules/jar/jar.service.js";
 import { BaseController } from "@server/modules/base/base.controller.js";
-import type {
-  BodyParameters,
-  UpdateBodyParameters,
-} from "@server/types/controllerTypes.js";
 
 export class JarController extends BaseController<
   Jar,
@@ -19,32 +14,12 @@ export class JarController extends BaseController<
   JarRepository,
   JarService
 > {
-  constructor() {
-    super(new JarRepository(), new JarService(), "jar");
+  constructor(service = new JarService()) {
+    super(service.repository, service, "jar");
   }
 
-  createJar = async (
-    req: Request<unknown, unknown, CreateJarBody>,
-    res: Response,
-  ) => {
-    return this.create(req, res);
-  };
-
-  getJarsByUserId = async (req: Request, res: Response) => {
-    return this.getByUserId(req, res);
-  };
-
-  updateJar = async (
-    req: Request<unknown, unknown, UpdateBodyParameters<Jar>>,
-    res: Response,
-  ) => {
-    return this.update(req, res);
-  };
-
-  deleteJar = async (
-    req: Request<unknown, unknown, BodyParameters>,
-    res: Response,
-  ) => {
-    return this.delete(req, res);
-  };
+  createJar = this.create;
+  getJarsByUserId = this.getByUserId;
+  updateJar = this.update;
+  deleteJar = this.delete;
 }
