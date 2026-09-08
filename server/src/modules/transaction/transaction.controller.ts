@@ -15,7 +15,7 @@ export class TransactionController extends BaseController<
   TransactionService
 > {
   constructor(service = new TransactionService()) {
-    super(service.repository, service);
+    super(service);
   }
 
   createTransaction = this.create;

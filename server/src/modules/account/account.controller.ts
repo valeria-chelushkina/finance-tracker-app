@@ -15,7 +15,7 @@ export class AccountController extends BaseController<
   AccountService
 > {
   constructor(service = new AccountService()) {
-    super(service.repository, service);
+    super(service);
   }
 
   createAccount = this.create;
